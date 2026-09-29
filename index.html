@@ -377,6 +377,7 @@
   <a href="#part1">Part 1</a>
   <a href="#p1-newton">Newton–Raphson</a>
   <a href="#p1-golden">Golden Section</a>
+  <a href="#p1-extra-points">Extra Points</a>
   <a href="#part2">Part 2</a>
   <a href="#line-fit">Line Fit</a>
   <a href="#parabola-fit">Parabola Fit</a>
@@ -588,6 +589,118 @@
       analytical minima for all five required points.
     </div>
   </section>
+
+
+  <section id="p1-extra-points">
+    <h2>Part 1 — Additional Point Tests</h2>
+
+    <p>
+      In addition to the five required points on \(y=x^2+5\), I also tested three
+      additional points to verify that the Newton–Raphson and Golden Section Search
+      routines work correctly for other point locations on the same function.
+    </p>
+
+    <div class="equation-box">
+      \[
+      f(x)=x^2+5
+      \]
+      \[
+      \text{Additional points: }(1,2),\;(-3,4),\;(5,3).
+      \]
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Point</th>
+          <th>Method</th>
+          <th>Closest \(x\)</th>
+          <th>Closest Point on Curve</th>
+          <th>Shortest Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="2">\((1,2)\)</td>
+          <td>Newton–Raphson</td>
+          <td>0.142038</td>
+          <td>\((0.142038,5.020175)\)</td>
+          <td>3.139674</td>
+        </tr>
+        <tr>
+          <td>Golden Section Search</td>
+          <td>0.142038</td>
+          <td>\((0.142038,5.020175)\)</td>
+          <td>3.139674</td>
+        </tr>
+        <tr>
+          <td rowspan="2">\((-3,4)\)</td>
+          <td>Newton–Raphson</td>
+          <td>-0.735139</td>
+          <td>\((-0.735139,5.540430)\)</td>
+          <td>2.739072</td>
+        </tr>
+        <tr>
+          <td>Golden Section Search</td>
+          <td>-0.735139</td>
+          <td>\((-0.735139,5.540430)\)</td>
+          <td>2.739072</td>
+        </tr>
+        <tr>
+          <td rowspan="2">\((5,3)\)</td>
+          <td>Newton–Raphson</td>
+          <td>0.797281</td>
+          <td>\((0.797281,5.635657)\)</td>
+          <td>4.960800</td>
+        </tr>
+        <tr>
+          <td>Golden Section Search</td>
+          <td>0.797281</td>
+          <td>\((0.797281,5.635657)\)</td>
+          <td>4.960800</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="result-box">
+      Both numerical methods produce the same closest-point and shortest-distance
+      values for all three additional test points, confirming that the routines
+      also work for other points on the same parabola \(y=x^2+5\).
+    </div>
+
+    <div class="plot-grid">
+      <figure>
+        <img src="plots/newton_extra_1_2.png" alt="Newton-Raphson additional point 1 2">
+        <figcaption>Newton–Raphson for the additional point \((1,2)\).</figcaption>
+      </figure>
+
+      <figure>
+        <img src="plots/golden_extra_1_2.png" alt="Golden Section additional point 1 2">
+        <figcaption>Golden Section Search for the additional point \((1,2)\).</figcaption>
+      </figure>
+
+      <figure>
+        <img src="plots/newton_extra_neg3_4.png" alt="Newton-Raphson additional point negative 3 4">
+        <figcaption>Newton–Raphson for the additional point \((-3,4)\).</figcaption>
+      </figure>
+
+      <figure>
+        <img src="plots/golden_extra_neg3_4.png" alt="Golden Section additional point negative 3 4">
+        <figcaption>Golden Section Search for the additional point \((-3,4)\).</figcaption>
+      </figure>
+
+      <figure>
+        <img src="plots/newton_extra_5_3.png" alt="Newton-Raphson additional point 5 3">
+        <figcaption>Newton–Raphson for the additional point \((5,3)\).</figcaption>
+      </figure>
+
+      <figure>
+        <img src="plots/golden_extra_5_3.png" alt="Golden Section additional point 5 3">
+        <figcaption>Golden Section Search for the additional point \((5,3)\).</figcaption>
+      </figure>
+    </div>
+  </section>
+
 
   <section>
     <h2>Part 1 — Additional Function Tests</h2>
