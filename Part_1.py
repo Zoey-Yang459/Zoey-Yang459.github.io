@@ -1,5 +1,10 @@
 import math
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+PLOTS_DIR = BASE_DIR / "plots"
+PLOTS_DIR.mkdir(exist_ok=True)
 
 # Define the function
 def f(x):
@@ -379,6 +384,54 @@ for (x0, y0), a, b in test_cases:
     print()
 
 
+# Additional Point Tests
+
+extra_points = [
+    (1, 2),
+    (-3, 4),
+    (5, 3)
+]
+
+print("ADDITIONAL POINT TESTS")
+
+for x0, y0 in extra_points:
+
+    # Newton-Raphson
+    newton_distance, newton_x, newton_history = find_newton_distance(
+        x0,
+        y0,
+        f,
+        df,
+        ddf,
+        initial_guess=x0
+    )
+
+    # Golden Section Search
+    golden_distance, golden_x, golden_history = golden_section_search(
+        x0,
+        y0,
+        f,
+        -6,
+        6
+    )
+
+    print(f"\nPoint: ({x0}, {y0})")
+
+    print("Newton-Raphson:")
+    print(f"  Closest x: {newton_x:.6f}")
+    print(f"  Closest point: ({newton_x:.6f}, {f(newton_x):.6f})")
+    print(f"  Shortest distance: {newton_distance:.6f}")
+
+    print("Golden Section Search:")
+    print(f"  Closest x: {golden_x:.6f}")
+    print(f"  Closest point: ({golden_x:.6f}, {f(golden_x):.6f})")
+    print(f"  Shortest distance: {golden_distance:.6f}")
+
+    print(
+        f"Difference between methods: "
+        f"{abs(newton_distance - golden_distance):.10f}"
+    )
+
 print("\nOther Parabola Test:")
 
 # Test point
@@ -523,7 +576,7 @@ plt.legend()
 plt.grid(True)
 
 plt.savefig(
-    "plots/newton_exp_0_0.png",
+    PLOTS_DIR / "newton_exp_0_0.png",
     dpi=300,
     bbox_inches="tight"
 )
@@ -615,7 +668,7 @@ plt.legend()
 plt.grid(True)
 
 plt.savefig(
-    "plots/golden_exp_0_0.png",
+    PLOTS_DIR / "golden_exp_0_0.png",
     dpi=300,
     bbox_inches="tight"
 )
@@ -632,7 +685,7 @@ plot_newton_steps(
     x_min=-8.5,
     x_max=2,
     equation_label=r"$y=x^2+5$",
-    filename="plots/newton_neg8_0_function.png"
+    filename=PLOTS_DIR / "newton_neg8_0.png"
 )
 
 plot_newton_steps(
@@ -645,7 +698,7 @@ plot_newton_steps(
     x_min=-2,
     x_max=2,
     equation_label=r"$y=x^2+5$",
-    filename="plots/newton_0_0.png"
+    filename=PLOTS_DIR / "newton_0_0.png"
 )
 
 plot_newton_steps(
@@ -658,7 +711,7 @@ plot_newton_steps(
     x_min=-4.5,
     x_max=2,
     equation_label=r"$y=x^2+5$",
-    filename="plots/newton_neg4_0.png"
+    filename=PLOTS_DIR / "newton_neg4_0.png"
 )
 
 plot_newton_steps(
@@ -671,7 +724,7 @@ plot_newton_steps(
     x_min=-2,
     x_max=2.5,
     equation_label=r"$y=x^2+5$",
-    filename="plots/newton_2_0.png"
+    filename=PLOTS_DIR / "newton_2_0.png"
 )
 
 plot_newton_steps(
@@ -684,7 +737,7 @@ plot_newton_steps(
     x_min=-2,
     x_max=6.5,
     equation_label=r"$y=x^2+5$",
-    filename="plots/newton_6_0.png"
+    filename=PLOTS_DIR / "newton_6_0.png"
 )
 
 plot_golden_steps(
@@ -696,7 +749,7 @@ plot_golden_steps(
     x_min=-8.5,
     x_max=2,
     equation_label=r"$y=x^2+5$",
-    filename="plots/golden_neg8_0_function.png"
+    filename=PLOTS_DIR / "golden_neg8_0.png"
 )
 
 plot_golden_steps(
@@ -708,7 +761,7 @@ plot_golden_steps(
     x_min=-2,
     x_max=2,
     equation_label=r"$y=x^2+5$",
-    filename="plots/golden_0_0.png"
+    filename=PLOTS_DIR / "golden_0_0.png"
 )
 
 plot_golden_steps(
@@ -720,7 +773,7 @@ plot_golden_steps(
     x_min=-4.5,
     x_max=2,
     equation_label=r"$y=x^2+5$",
-    filename="plots/golden_neg4_0.png"
+    filename=PLOTS_DIR / "golden_neg4_0.png"
 )
 
 plot_golden_steps(
@@ -732,7 +785,7 @@ plot_golden_steps(
     x_min=-2,
     x_max=2.5,
     equation_label=r"$y=x^2+5$",
-    filename="plots/golden_2_0.png"
+    filename=PLOTS_DIR / "golden_2_0.png"
 )
 
 plot_golden_steps(
@@ -744,7 +797,7 @@ plot_golden_steps(
     x_min=-2,
     x_max=6.5,
     equation_label=r"$y=x^2+5$",
-    filename="plots/golden_6_0.png"
+    filename=PLOTS_DIR / "golden_6_0.png"
 )
 
 plot_newton_steps(
@@ -757,7 +810,7 @@ plot_newton_steps(
     x_min=-2,
     x_max=5,
     equation_label=r"$y=0.5x^2-2x+3$",
-    filename="plots/newton_second_parabola.png"
+    filename=PLOTS_DIR / "newton_second_parabola.png"
 )
 
 plot_golden_steps(
@@ -769,5 +822,45 @@ plot_golden_steps(
     x_min=-2,
     x_max=5,
     equation_label=r"$y=0.5x^2-2x+3$",
-    filename="plots/golden_second_parabola.png"
+    filename=PLOTS_DIR / "golden_second_parabola.png"
 )
+
+# Additional points for the original parabola y = x^2 + 5
+
+extra_points = [
+    (1, 2),
+    (-3, 4),
+    (5, 3)
+]
+
+for x0, y0 in extra_points:
+
+    x_name = str(x0).replace("-", "neg")
+    y_name = str(y0).replace("-", "neg")
+
+    # Newton-Raphson
+    plot_newton_steps(
+        x0=x0,
+        y0=y0,
+        f=f,
+        df=df,
+        ddf=ddf,
+        initial_guess=x0,
+        x_min=min(-4, x0 - 3),
+        x_max=max(4, x0 + 3),
+        equation_label=r"$y=x^2+5$",
+        filename=PLOTS_DIR / f"newton_extra_{x_name}_{y_name}.png"
+    )
+
+    # Golden Section Search
+    plot_golden_steps(
+        x0=x0,
+        y0=y0,
+        f=f,
+        a=-6,
+        b=6,
+        x_min=min(-4, x0 - 3),
+        x_max=max(4, x0 + 3),
+        equation_label=r"$y=x^2+5$",
+        filename=PLOTS_DIR / f"golden_extra_{x_name}_{y_name}.png"
+    )
