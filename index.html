@@ -289,8 +289,15 @@
     .code-panel pre {
       margin: 0;
       border-radius: 0;
-      max-height: 720px;
-      overflow: auto;
+      max-height: none;
+      overflow: visible;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    
+    .code-panel code {
+      white-space: pre-wrap;
     }
 
     .code-status {
@@ -1204,12 +1211,6 @@
   <section id="code">
     <span class="part-label">SOURCE CODE</span>
     <h2>Python Implementation</h2>
-
-    <p class="lead">
-      The complete Python files used for Assignment 1 are displayed below.
-      Each panel loads the corresponding source file directly from this repository,
-      so it stays consistent with the submitted Python code.
-    </p>
 
     <div class="source-links">
       <a href="Part_1.py" target="_blank" rel="noopener">Open Part 1 Python File</a>
