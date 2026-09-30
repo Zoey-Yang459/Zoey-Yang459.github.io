@@ -9,10 +9,6 @@ PLOTS_DIR = BASE_DIR / "plots"
 PLOTS_DIR.mkdir(exist_ok=True)
 
 
-# ============================================================
-# PART TWO: FITTING FUNCTIONS TO DATA
-# ============================================================
-
 # Given data points
 points = [
     (0, 0.5),
@@ -22,10 +18,8 @@ points = [
 ]
 
 
-# ============================================================
-# 1. LINE FITTING
-# y = mx + b
-# ============================================================
+# try y = mx + b
+
 
 def line_mse(m, b, points):
     total_error = 0
@@ -55,10 +49,6 @@ def line_newton(
 
     for iteration in range(1, max_iter + 1):
 
-        # ----------------------------------------------------
-        # Step 1: update m while holding b fixed
-        # ----------------------------------------------------
-
         dMSE_dm = (
             2 / n
         ) * sum(
@@ -75,10 +65,6 @@ def line_newton(
 
         new_m = m - dMSE_dm / d2MSE_dm2
 
-
-        # ----------------------------------------------------
-        # Step 2: update b using the new m
-        # ----------------------------------------------------
 
         dMSE_db = (
             2 / n
@@ -118,9 +104,7 @@ def line_newton(
 
 
 
-# ============================================================
 # RUN LINE NEWTON METHOD
-# ============================================================
 
 line_m, line_b, line_final_mse, line_history = line_newton(
     points,
@@ -128,10 +112,7 @@ line_m, line_b, line_final_mse, line_history = line_newton(
     b0=0
 )
 
-
-print("======================================")
 print("LINE FIT")
-print("======================================")
 
 for iteration, m, b, mse in line_history:
     print(
@@ -152,11 +133,7 @@ print(
 )
 
 
-
-# ============================================================
-# 2. PARABOLA FITTING
 # y = ax^2 + bx + c
-# ============================================================
 
 def parabola_mse(a, b, c, points):
     total_error = 0
@@ -196,10 +173,6 @@ def parabola_newton(
 
     for iteration in range(1, max_iter + 1):
 
-        # ----------------------------------------------------
-        # Step 1: update a while holding b and c fixed
-        # ----------------------------------------------------
-
         dMSE_da = (
             2 / n
         ) * sum(
@@ -218,10 +191,6 @@ def parabola_newton(
         new_a = a - dMSE_da / d2MSE_da2
 
 
-        # ----------------------------------------------------
-        # Step 2: update b using new a
-        # ----------------------------------------------------
-
         dMSE_db = (
             2 / n
         ) * sum(
@@ -238,11 +207,6 @@ def parabola_newton(
         )
 
         new_b = b - dMSE_db / d2MSE_db2
-
-
-        # ----------------------------------------------------
-        # Step 3: update c using new a and new b
-        # ----------------------------------------------------
 
         dMSE_dc = (
             2 / n
@@ -306,10 +270,7 @@ def parabola_newton(
 
 
 
-# ============================================================
 # RUN PARABOLA NEWTON METHOD
-# ============================================================
-
 (
     para_a,
     para_b,
@@ -323,10 +284,7 @@ def parabola_newton(
     c0=0
 )
 
-
-print("\n======================================")
 print("PARABOLA FIT")
-print("======================================")
 
 # Only show the first few iterations
 for iteration, a, b, c, mse in para_history[:10]:
@@ -352,10 +310,6 @@ print(
 )
 
 
-
-# ============================================================
-# 3. PLOT LINE INTERMEDIATE STEPS
-# ============================================================
 
 x_values = [
     -0.5 + i * 0.01
@@ -438,10 +392,6 @@ plt.show()
 
 
 
-# ============================================================
-# 4. LINE MSE CONVERGENCE
-# ============================================================
-
 # Skip iteration 0 so the convergence is visible
 line_iterations = [
     item[0]
@@ -483,11 +433,6 @@ plt.savefig(
 
 plt.show()
 
-
-
-# ============================================================
-# 5. PLOT PARABOLA INTERMEDIATE STEPS
-# ============================================================
 
 plt.figure(figsize=(9, 6))
 
@@ -573,11 +518,6 @@ plt.savefig(
 
 plt.show()
 
-
-
-# ============================================================
-# 6. PARABOLA MSE CONVERGENCE
-# ============================================================
 
 # Skip iteration 0 and display the early convergence clearly
 para_plot_history = para_history[1:16]
