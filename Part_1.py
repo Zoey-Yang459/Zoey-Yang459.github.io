@@ -585,7 +585,6 @@ plt.show()
 
 
 # Golden Section Search plot for non-polynomial example: y = e^x
-
 x0_plot = 0
 y0_plot = 0
 
