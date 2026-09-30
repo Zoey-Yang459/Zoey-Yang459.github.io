@@ -382,8 +382,8 @@
   <a href="#line-fit">Line Fit</a>
   <a href="#parabola-fit">Parabola Fit</a>
   <a href="#comparison">Comparison</a>
-  <a href="#handwritten">Handwritten Work</a>
   <a href="#code">Code</a>
+  <a href="#handwritten">Handwritten Work</a>
 </nav>
 
 <main>
@@ -431,32 +431,32 @@
 
     <h3>Analytical Solution</h3>
 
-    <p>Because all required points have \(y_0=0\),</p>
-
     <div class="equation-box">
       \[
-      D(x)=(x-x_0)^2+(x^2+5)^2.
+      D(x)=(x-x_0)^2+(x^2+5+y_0)^2.
       \]
 
       \[
-      D'(x)=2(x-x_0)+4x(x^2+5).
+      D'(x)=2(x-x_0)+4x(x^2+5+y_0).
       \]
 
       \[
-      D'(x)=4x^3+22x-2x_0.
+      D'(x)=4x^3+22x-2x_0-4xy_0.
       \]
 
       Setting \(D'(x)=0\),
 
       \[
-      \boxed{2x^3+11x-x_0=0}.
+      \boxed{2x^3+11x-x_0-2xy_0=0}.
       \]
 
       Also,
 
       \[
-      D''(x)=12x^2+22>0,
+      D''(x)=12x^2+22-4y_0>0,
       \]
+
+      and all required points have \(y_0=0\),
 
       so the critical point is the unique global minimum.
     </div>
@@ -499,8 +499,8 @@
       x_{k+1}
       =
       x_k-
-      \frac{2x_k^3+11x_k-x_0}
-           {6x_k^2+11}
+      \frac{2x_k^3+11x_k-x_0-2x_ky_0}
+           {6x_k^2+11-2y_0}
       }.
       \]
     </div>
@@ -551,9 +551,17 @@
       \[
       D(x)=(x-x_0)^2+(f(x)-y_0)^2
       \]
+      
+      \[
+      D(x)=(x-x_0)^2+(x^2+5-y_0)^2
+      \]
 
       \[
       \phi=\frac{1+\sqrt5}{2}.
+      \]
+
+      \[
+      r = 2-\phi = 2-\frac{1+\sqrt5}{2}=0.381966
       \]
     </div>
 
@@ -584,7 +592,7 @@
       </figure>
     </div>
 
-    <div class="result-box">
+    <div class="note-box">
       <strong>Result:</strong> Newton–Raphson and Golden Section Search agree with the
       analytical minima for all five required points.
     </div>
@@ -662,7 +670,7 @@
       </tbody>
     </table>
 
-    <div class="result-box">
+    <div class="note-box">
       Both numerical methods produce the same closest-point and shortest-distance
       values for all three additional test points, confirming that the routines
       also work for other points on the same parabola \(y=x^2+5\).
@@ -794,7 +802,11 @@
 
     <div class="equation-box">
       \[
-      \hat y=mx+b.
+      \hat y_i=mx_i+b.
+      \]
+
+      \[
+      error: e_i = \hat y_i - y_i
       \]
     </div>
 
@@ -805,6 +817,12 @@
       MSE(m,b)
       =
       \frac14
+      \sum_{i=1}^{4}
+      (mx_i+b-y_i)^2
+      \]
+
+      \[
+      =\frac14
       \left[
       (b-0.5)^2
       +(2m+b-3.5)^2
@@ -846,12 +864,12 @@
       \]
     </div>
 
-    <div class="result-box">
+    <div class="note-box">
       \[
       \boxed{\hat y=2.3x-0.2}
       \]
       \[
-      \boxed{MSE_{\text{line}}=0.575}.
+      \boxed{ MSE_{\text{line}=0.575}.
       \]
     </div>
 
@@ -928,7 +946,11 @@
 
     <div class="equation-box">
       \[
-      \hat y=ax^2+bx+c.
+      \hat y_i=ax_i^2+bx_i+c.
+      \]
+
+      \[
+      error: e_i = \hat y_i - y_i
       \]
     </div>
 
@@ -937,6 +959,13 @@
     <div class="equation-box">
       \[
       MSE(a,b,c)
+      =
+      \frac14
+      \sum_{i=1}^{4}
+      (ax_i^2+bx_i+c-y_i)^2
+      \]
+
+      \[
       =
       \frac14
       \left[
@@ -990,7 +1019,7 @@
       \]
     </div>
 
-    <div class="result-box">
+    <div class="note-box">
       \[
       \boxed{\hat y=0.75x^2+0.05x+0.55}
       \]
@@ -1069,13 +1098,6 @@
       </figure>
     </div>
 
-    <div class="note-box">
-      Because the MSE is quadratic in its coefficients, a full Hessian-based
-      multivariate Newton step would behave differently. Here the parameters are
-      updated sequentially to follow the parameter-by-parameter procedure used in
-      this assignment.
-    </div>
-
     <div class="source-links">
       <a href="Part_2.py">View Part 2 Python Source</a>
     </div>
@@ -1109,7 +1131,7 @@
       </tbody>
     </table>
 
-    <div class="result-box">
+    <div class="note-box">
       Both numerical procedures converge to the corresponding analytical
       least-squares solutions. For these four data points, the parabola produces a
       much smaller MSE than the line because its additional curvature better represents
