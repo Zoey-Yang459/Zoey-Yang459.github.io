@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SYDE 572 | Assignment 2 — Linear Basis Function Regression</title>
   <meta name="description" content="SYDE 572 Assignment 2: polynomial and Gaussian basis function regression with cross-validation, plots, and full reproducible Python source code.">
+  <script> window.MathJax = {tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']]}};</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     :root {
       --ink: #17253a; --muted: #50637b; --navy: #142b4b; --blue: #225fba;
@@ -118,8 +120,7 @@
   <header class="hero" id="top">
     <div class="eyebrow">University of Waterloo · SYDE 572</div>
     <h1>Assignment 2<br>Linear Basis Function Regression</h1>
-    <div class="subtitle">Polynomial and Gaussian basis functions · Least squares · L2 regularization · 10-fold cross-validation</div>
-    <div class="meta"><span>Zoey-Qixuan Yang</span><span>Student #: 21001900</span><span>Python / NumPy</span><span>Boston Housing dataset</span></div>
+    <div class="meta"><span>Zoey-Qixuan Yang</span><span>Student #: 21001900</span></div>
   </header>
   <nav><div class="nav-inner">
     <a href="#overview">Overview</a><a href="#poly-a">1(a) Polynomial</a>
@@ -138,15 +139,30 @@
       <div><h3>Preparation</h3><p>The first 100 records are used for fitting and the remaining 406 for testing. Each feature is standardized using the training subset mean and standard deviation. Zero training standard deviations are replaced by 1 to avoid division by zero.</p></div>
       <div><h3>Evaluation</h3><p>Training and testing errors are reported as root mean squared error (RMSE). Hyperparameters in Questions 1(d) and 2(f) are chosen using 10-fold cross-validation on only the first 100 observations.</p></div>
     </div>
-    <div class="equation">z<sub>j</sub> = (x<sub>j</sub> − μ<sub>j,train</sub>) / σ<sub>j,train</sub><br>RMSE = √[ (1 / N) Σ<sub>i=1…N</sub> (ŷ<sub>i</sub> − y<sub>i</sub>)<sup>2</sup> ]</div>
-    <div class="callout note"><strong>Data note.</strong> This historical dataset was provided for the assignment and has documented concerns about biased demographic and socioeconomic attributes. The analysis here is a methodological course exercise, not a recommendation to use this dataset for housing decisions.</div>
+    <div class="equation">
+      \[
+      z_j = \frac{x_j - \mu_{j,\text{train}}}{\sigma_{j,\text{train}}}
+      \]
+      \[
+      \mathrm{RMSE} = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(\hat{y}_i - y_i)^2}
+      \]
+    </div>
   </section>
 
   <section id="poly-a">
     <span class="sec-tag">Part 1 · Question (a)</span>
     <h2>Polynomial Basis Regression: Degrees 1–7</h2>
     <p>For polynomial degree <em>p</em>, I use a bias term and separate powers of each of the 13 standardized features. As required, the basis contains <strong>no feature interactions or cross-terms</strong>.</p>
-    <div class="equation">ŷ(z) = w<sub>0</sub> + Σ<sub>j=1…13</sub> Σ<sub>k=1…p</sub> w<sub>jk</sub> z<sub>j</sub><sup>k</sup><small>Feature counts: 14 columns at degree 1; 92 columns at degree 7 (including the intercept).</small></div>
+    <div class="equation">
+      \[
+      \hat{y}(\mathbf{z}) =
+      w_0 +
+      \sum_{j=1}^{13}
+      \sum_{k=1}^{p}
+      w_{jk} z_j^{k}
+      \]
+    </div>
+
     <p>Weights are fitted using unregularized least squares, and RMSE is evaluated independently on the training and testing subsets.</p>
     <div class="table-wrap"><table><thead><tr><th>Polynomial degree</th><th>Training RMSE</th><th>Testing RMSE</th></tr></thead><tbody><tr><td>1</td><td>2.037201</td><td>36.44495</td></tr>
 <tr><td>2</td><td>1.578079</td><td>1.097188 × 10³</td></tr>
@@ -182,7 +198,6 @@
 <tr><td>w₁₃</td><td>LSTAT</td><td>+0.148761</td></tr></tbody></table></div>
     <div class="metrics"><div class="metric"><span>Bias w₀</span><strong>22.309000</strong></div><div class="metric"><span>Average rooms (RM)</span><strong>+4.195634</strong></div><div class="metric"><span>Employment distance (DIS)</span><strong>+0.010715</strong></div></div>
     <p><strong>RM:</strong> A positive coefficient is reasonable: holding other standardized features constant, one training-standard-deviation increase in the average number of rooms is associated with about a $4,196 increase in predicted median value. <strong>DIS:</strong> The coefficient is almost zero, so weighted distance to employment centers contributes little additional linear prediction in this fitted model; its small positive sign should not be over-interpreted.</p>
-    <div class="callout note"><strong>Indexing clarification.</strong> According to <code>housing.names</code>, RM is the sixth dataset feature and DIS is the eighth. The assignment calls them the fifth and seventh; with our explicit bias column, they appear at <code>weights[6]</code> and <code>weights[8]</code>. The table labels both by their feature names to prevent ambiguity. CHAS receives weight zero because this training subset has no variation in CHAS.</div>
   </section>
 
   <section id="poly-c">
@@ -198,7 +213,7 @@
     </figure>
 <figure class="figure ">
       <img src="plots/polynomial_1d_degree_3.png" alt="Figure 3 · Degree 3">
-      <figcaption><strong>Figure 3 · Degree 3</strong><span>A mildly curved model with little test-error improvement.</span></figcaption>
+      <figcaption><strong>Figure 3 · Degree 3</strong><span>A mildly curved model with almost no test-error improvement.</span></figcaption>
     </figure>
 <figure class="figure ">
       <img src="plots/polynomial_1d_degree_7.png" alt="Figure 4 · Degree 7">
@@ -211,7 +226,22 @@
     <span class="sec-tag">Part 1 · Question (d)</span>
     <h2>Polynomial L2 Regularization: 10-Fold CV</h2>
     <p>A degree-8 polynomial on the second feature (ZN) is fitted using L2-regularized least squares. The intercept is not penalized. The 100 training observations are split into 10 folds using seed 42; normalization is recomputed using each fold's fitting data, preventing leakage from validation observations.</p>
-    <div class="equation">J(w) = ‖Φw − y‖<sup>2</sup> + λ Σ<sub>j≥1</sub> w<sub>j</sub><sup>2</sup><small>λ ∈ {0, 0.01, 0.1, 1, 10, 100, 1000}. The plotted value is the mean validation-fold RMSE.</small></div>
+    <div class="equation">
+      \[
+      J(\mathbf{w}) =
+      \left\|
+      \boldsymbol{\Phi}\mathbf{w} - \mathbf{y}
+      \right\|_2^2
+      +
+      \lambda \sum_{j=1}^{8} w_j^2
+      \]
+      <p><small>
+        &lambda; &isin; {0, 0.01, 0.1, 1, 10, 100, 1000}.
+        The plotted value is the mean validation-fold RMSE.
+      </small>
+      </p>
+    </div>
+
     <div class="table-wrap"><table><thead><tr><th>λ</th><th>Average validation RMSE</th></tr></thead><tbody><tr><td>0</td><td>12.419501</td></tr>
 <tr class="best-row"><td>0.01</td><td>5.805655</td></tr>
 <tr><td>0.1</td><td>8.779093</td></tr>
@@ -230,7 +260,33 @@
     <span class="sec-tag">Part 2 · Question (e)</span>
     <h2>Gaussian Basis Regression: 5–95 Centers</h2>
     <p>Gaussian basis functions replace the polynomial feature expansion. The centers are chosen as the first K entries of one reproducible random permutation of the training observations. All 13 standardized features are used, and no regularization is applied.</p>
-    <div class="equation">φ<sub>j</sub>(z) = exp(−‖z − c<sub>j</sub>‖<sup>2</sup> / (2σ<sup>2</sup>))<br>ŷ(z) = w<sub>0</sub> + Σ<sub>j=1…K</sub> w<sub>j</sub> φ<sub>j</sub>(z)<small>Width choice: σ = 4.624722, the median positive pairwise training distance after normalization; random seed = 42.</small></div>
+    
+    <div class="equation">
+      \[
+      \phi_j(\mathbf{z}) =
+      \exp\left(
+        -\frac{
+          \|\mathbf{z}-\mathbf{c}_j\|_2^2
+        }{
+          2\sigma^2
+        }
+        \right)
+        \]
+        \[
+        \hat{y}(\mathbf{z}) =
+        w_0 + \sum_{j=1}^{K}
+        w_j\phi_j(\mathbf{z})
+        \]
+        <p><small>
+          Width choice: &sigma; = 4.624722
+          (&sigma;&sup2; &asymp; 21.3881),
+          the median positive pairwise training
+          distance after normalization;
+          random seed = 42.
+        </small>
+        </p>
+      </div>
+
     <div class="table-wrap"><table><thead><tr><th>No. of basis functions (K)</th><th>Training RMSE</th><th>Testing RMSE</th></tr></thead><tbody><tr><td>5</td><td>3.546369</td><td>13.334609</td></tr>
 <tr><td>15</td><td>2.158441</td><td>9.086658</td></tr>
 <tr><td>25</td><td>1.629604</td><td>7.488790</td></tr>
@@ -252,7 +308,26 @@
     <span class="sec-tag">Part 2 · Question (f)</span>
     <h2>Gaussian L2 Regularization: 10-Fold CV</h2>
     <p>Here I use <strong>K = 90 Gaussian basis functions</strong>, all 13 input features, and the same seven candidate λ values. Each of the 10 folds contains 90 fitting observations and 10 validation observations. The mean, standard deviation, Gaussian width, and centers are determined exclusively from each fold's fitting data; the same centers are used to evaluate every λ within a fold.</p>
-    <div class="equation">J(w) = ‖Φw − y‖<sup>2</sup> + λ Σ<sub>j≥1</sub> w<sub>j</sub><sup>2</sup><small>Ridge penalizes Gaussian weights but not the bias; average error is computed across the ten validation folds.</small></div>
+    
+<div class="equation">
+  \[
+  J(\mathbf{w}) =
+  \left\|
+  \boldsymbol{\Phi}\mathbf{w} - \mathbf{y}
+  \right\|_2^2
+  +
+  \lambda \sum_{j=1}^{90} w_j^2
+  \]
+
+  <p><small>
+    Ridge regularization penalizes the 90 Gaussian
+    coefficients but not the bias.
+    The reported validation error is the average
+    RMSE across the ten cross-validation folds.
+  </small>
+  </p>
+</div>
+
     <div class="table-wrap"><table><thead><tr><th>λ</th><th>Average validation RMSE</th></tr></thead><tbody><tr><td>0</td><td>9.218162</td></tr>
 <tr class="best-row"><td>0.01</td><td>1.814715</td></tr>
 <tr><td>0.1</td><td>2.045118</td></tr>
@@ -274,15 +349,13 @@
       <div><h3>Model complexity</h3><p>For both polynomial and Gaussian bases, additional model complexity consistently reduces training error but can sharply increase testing error. Lower training RMSE by itself is not sufficient evidence of better prediction.</p></div>
       <div><h3>Why regularization helps</h3><p>L2 penalties discourage large fitted weights. In both degree-8 ZN regression and 90-center Gaussian regression, cross-validation selected λ = 0.01 from the specified candidate values, outperforming the unregularized model.</p></div>
     </div>
-    <div class="box"><strong>Method choices.</strong> All least-squares solutions use <code>numpy.linalg.lstsq</code>; positive λ is solved through an augmented least-squares system. The intercept is unpenalized. The first 100 records form the only fitting/CV pool. Random seed 42 fixes fold permutations and Gaussian centers. Gaussian width is selected by median positive pairwise Euclidean distance. These choices make the reported experiments reproducible.</div>
-    <p class="small">Interpretation caveat: Test RMSE and cross-validation RMSE are estimated from different evaluation splits and model configurations, so they should not be treated as directly comparable estimates. This assignment uses an intentionally unusual ordered 100/406 split and a historical dataset with documented social-bias concerns.</p>
+    <p class="small">Training and testing RMSE differ by orders of magnitude partly because the split is not random — rows 1–100 are not a representative sample of the full 506. Several features (e.g., ZN, TAX, RAD) are nearly sorted across the dataset, so the training slice under-represents the range seen at test time. For the same reason, cross-validation RMSE in 1(d)/2(f) (computed only within the first 100 rows) is not a reliable estimate of true test performance.</p>
     <div class="file-links"><a href="Part_1.py">Part 1 source code</a><a href="Part_2.py">Part 2 source code</a><a href="housing.data">Dataset</a><a href="housing.names">Dataset description</a></div>
   </section>
 
   <section id="source-code">
     <span class="sec-tag">Appendix · Complete implementation</span>
     <h2>Full Python Source Code</h2>
-    <div class="source-intro"><strong>Both scripts are reproduced in full below.</strong> These are plain, always-visible code blocks — there are no expand/collapse controls, inner scroll windows, or external code-loading requests. The code also remains fully visible when the page is printed to PDF. The files are available individually through the links below.</div>
     <div class="file-links"><a href="Part_1.py" download>Download Part_1.py</a><a href="Part_2.py" download>Download Part_2.py</a></div>
     <div class="code-heading">Part_1.py — Polynomial basis regression, Questions 1(a)–1(d)</div>
     <pre class="source"><code>&quot;&quot;&quot;SYDE 572 Assignment 2 — Part 1: polynomial basis regression.
