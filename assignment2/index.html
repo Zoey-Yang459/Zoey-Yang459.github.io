@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SYDE 572 | Assignment 2 — Linear Basis Function Regression</title>
+  <meta name="description" content="SYDE 572 Assignment 2: polynomial and Gaussian basis function regression with cross-validation, plots, and full reproducible Python source code.">
+  <style>
+    :root {
+      --ink: #17253a; --muted: #50637b; --navy: #142b4b; --blue: #225fba;
+      --aqua: #d6f0ef; --paper: #f4f7fb; --line: #dbe4f0; --card: #fff;
+      --soft: #ecf2fc; --green: #0a7161; --cream: #fefaf0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--ink); background:var(--paper); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size:15px; line-height:1.7; }
+    a { color:var(--blue); }
+    .hero { color:#fff; padding:64px max(22px,calc((100vw - 1120px)/2)) 58px; background:linear-gradient(120deg, #132944, #184471 66%, #176474); }
+    .hero .eyebrow { text-transform:uppercase; letter-spacing:.19em; font-size:12px; font-weight:700; opacity:.85; }
+    h1 { max-width:900px; font-size:clamp(33px,4.4vw,56px); line-height:1.11; margin:20px 0 12px; letter-spacing:-.035em; }
+    .hero .subtitle { max-width:700px; font-size:19px; color:#d5e7f6; }
+    .hero .meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
+    .meta span { background:#ffffff18; border:1px solid #ffffff35; border-radius:999px; padding:6px 13px; font-size:12px; font-weight:600; }
+    nav { position:sticky; top:0; z-index:5; background:rgba(255,255,255,.98); border-bottom:1px solid var(--line); }
+    .nav-inner { max-width:1120px; margin:0 auto; display:flex; align-items:center; gap:5px; overflow-x:auto; white-space:nowrap; padding:8px 16px; }
+    nav a { color:#334967; font-size:12px; font-weight:700; text-decoration:none; border-radius:7px; padding:6px 10px; }
+    nav a:hover { background:var(--soft); color:var(--blue); }
+    main { max-width:1120px; margin:30px auto 65px; padding:0 16px; }
+    section { scroll-margin-top:72px; margin:0 0 23px; padding:34px 38px; background:var(--card); border:1px solid var(--line); border-radius:18px; box-shadow:0 5px 22px #13243e0b; }
+    h2 { font-size:clamp(25px,2.7vw,31px); line-height:1.25; letter-spacing:-.025em; margin:0 0 14px; }
+    h3 { font-size:19px; line-height:1.4; margin:27px 0 9px; }
+    h4 { font-size:15px; margin:17px 0 6px; }
+    p { margin:9px 0 14px; }
+    .sec-tag { display:inline-block; margin-bottom:13px; color:var(--blue); background:#ebf3ff; border-radius:6px; font-size:11px; font-weight:800; letter-spacing:.09em; padding:5px 10px; text-transform:uppercase; }
+    .lead { font-size:16px; color:#364f69; max-width:920px; }
+    .small { font-size:13px; color:var(--muted); }
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:23px 0 18px; }
+    .stat { border:1px solid var(--line); padding:18px 17px; border-radius:12px; background:#fbfcff; }
+    .stat strong { display:block; font-size:27px; letter-spacing:-.04em; color:var(--navy); line-height:1.2; }
+    .stat span { font-size:12px; color:var(--muted); font-weight:600; }
+    .columns { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .box { border:1px solid #d8e6f6; background:#f8fbff; border-radius:12px; padding:16px 19px; margin:16px 0; }
+    .box b { color:var(--navy); }
+    .equation { font-family:"Cambria Math","Times New Roman",serif; font-size:19px; letter-spacing:.005em; color:#113e6d; text-align:center; padding:16px 13px; margin:16px 0; border:1px solid #d7e3f3; border-radius:12px; background:#f5f9ff; overflow-wrap:anywhere; }
+    .equation small { display:block; font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; color:var(--muted); margin-top:8px; }
+    .callout { border-left:4px solid var(--blue); background:#f1f6fe; padding:13px 17px; border-radius:0 9px 9px 0; margin:17px 0; }
+    .callout.result { border-left-color:var(--green); background:#ecf8f6; }
+    .callout.note { border-left-color:#ac7a2d; background:var(--cream); }
+    .metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; margin:17px 0 19px; }
+    .metric { border:1px solid var(--line); border-radius:11px; padding:16px; background:#fbfcfe; }
+    .metric span { display:block; color:var(--muted); font-size:12px; font-weight:650; }
+    .metric strong { display:block; color:var(--navy); font-size:23px; font-weight:800; font-variant-numeric:tabular-nums; margin-top:3px; }
+    .table-wrap { overflow-x:auto; margin:16px 0 22px; }
+    table { border-collapse:collapse; width:100%; font-size:13px; font-variant-numeric:tabular-nums; }
+    th,td { text-align:left; border-bottom:1px solid var(--line); padding:9px 11px; }
+    th { background:#edf4fd; color:#193855; font-size:12px; font-weight:800; }
+    tbody tr:nth-child(even) { background:#f9fbfe; }
+    tr.best-row { background:#e6f6f2 !important; font-weight:750; }
+    .figure-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:20px; }
+    figure { margin:18px 0; }
+    .figure { border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff; }
+    .figure img { display:block; width:100%; height:auto; }
+    .figure figcaption { display:flex; flex-direction:column; gap:3px; padding:11px 15px 14px; font-size:12px; line-height:1.5; color:var(--muted); border-top:1px solid var(--line); }
+    .figure figcaption strong { color:var(--ink); font-size:13px; }
+    .figure.large { max-width:940px; margin:19px auto; }
+    .source-intro { padding:15px 19px; border:1px solid var(--line); border-radius:11px; background:#f8fbff; margin-bottom:19px; }
+    .file-links { display:flex; gap:12px; flex-wrap:wrap; margin:15px 0; }
+    .file-links a { display:inline-block; text-decoration:none; border:1px solid #b5c9e6; color:#204f88; padding:8px 12px; border-radius:8px; font-size:13px; font-weight:700; background:#f3f8ff; }
+    .code-heading { background:#e9f1fc; color:#213d59; padding:15px 18px; font-weight:800; font-size:15px; margin:23px 0 0; border:1px solid #cfddf0; border-radius:12px 12px 0 0; }
+    pre.source { margin:0 0 18px; background:#152235; border:1px solid #2b415d; color:#e6f0fc; border-radius:0 0 12px 12px; padding:20px; font-size:11.3px; line-height:1.52; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; overflow:visible; max-height:none; }
+    pre.source code { white-space:inherit; }
+    footer { text-align:center; color:#64748b; padding:10px 20px 47px; font-size:12px; }
+    @media (max-width:780px) {
+      .hero { padding:44px 22px; }
+      section { padding:25px 20px; }
+      .stats,.metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .columns,.figure-grid { grid-template-columns:1fr; }
+      .figure-grid .figure { margin:0; }
+      table { font-size:12px; }
+      th,td { padding:8px 7px; }
+    }
+    @page { size:Letter; margin:0.68in 0.65in 0.7in; }
+    @media print {
+      html,body { margin:0; padding:0; color:#17253a; background:white; font-size:10.5pt; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      nav { display:none; }
+      .hero { padding:21px 25px; background:#163656 !important; }
+      h1 { font-size:29pt; }
+      .hero .subtitle { font-size:11.5pt; }
+      .hero .meta { gap:5px; margin-top:9px; }
+      .hero .meta span { padding:3px 8px; font-size:8.5pt; }
+      main { margin:14px 0 0; padding:0; max-width:none; }
+      section { margin:0 0 13px; padding:15px 5px; border:none; border-radius:0; box-shadow:none; break-inside:auto; }
+      h2 { font-size:19pt; }
+      h3 { font-size:13pt; break-after:avoid; }
+      p,.callout,.equation { orphans:3; widows:3; }
+      .stats { gap:8px; }
+      .stat { padding:9px; }
+      .stat strong { font-size:17pt; }
+      .stats,.metrics,.box,figure,.table-wrap { break-inside:avoid; }
+      .figure { margin:12px auto; max-width:93% !important; }
+      .figure img { max-height:5.9in; object-fit:contain; }
+      .figure-grid { grid-template-columns:1fr; gap:10px; }
+      .figure-grid .figure { margin:5px auto 9px; max-width:88%; }
+      th,td { padding:5px 7px; font-size:9pt; }
+      .table-wrap { overflow:visible; }
+      .file-links { display:none; }
+      .source-intro { break-inside:auto; }
+      #source-code { break-before:page; }
+      .code-heading { margin-top:17px; break-after:avoid; }
+      pre.source { max-height:none!important; overflow:visible!important; overflow-wrap:anywhere!important; white-space:pre-wrap!important; word-break:break-word; background:#fff; color:#182638; padding:11px; border:1px solid #d3dce8; font-size:7.1pt; line-height:1.31; break-inside:auto; }
+      pre.source code { white-space:pre-wrap; }
+      footer { padding:4px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero" id="top">
+    <div class="eyebrow">University of Waterloo · SYDE 572</div>
+    <h1>Assignment 2<br>Linear Basis Function Regression</h1>
+    <div class="subtitle">Polynomial and Gaussian basis functions · Least squares · L2 regularization · 10-fold cross-validation</div>
+    <div class="meta"><span>Zoey-Qixuan Yang</span><span>Student #: 21001900</span><span>Python / NumPy</span><span>Boston Housing dataset</span></div>
+  </header>
+  <nav><div class="nav-inner">
+    <a href="#overview">Overview</a><a href="#poly-a">1(a) Polynomial</a>
+    <a href="#poly-b">1(b) Weights</a><a href="#poly-c">1(c) Visualization</a>
+    <a href="#poly-d">1(d) Regularization</a><a href="#gauss-e">2(e) Gaussian</a>
+    <a href="#gauss-f">2(f) CV</a><a href="#conclusions">Discussion</a>
+    <a href="#source-code">Complete Code</a>
+  </div></nav>
+  <main>
+  <section id="overview">
+    <span class="sec-tag">Dataset &amp; approach</span>
+    <h2>Overview</h2>
+    <p class="lead">This assignment compares polynomial and Gaussian linear basis-function regression to predict median house values using the historical Boston Housing dataset. I implemented the basis matrices, least-squares models, L2-regularized models, and cross-validation using NumPy.</p>
+    <div class="stats"><div class="stat"><strong>506</strong><span>Total observations</span></div><div class="stat"><strong>13</strong><span>Input features</span></div><div class="stat"><strong>100</strong><span>Training observations</span></div><div class="stat"><strong>406</strong><span>Testing observations</span></div></div>
+    <div class="columns">
+      <div><h3>Preparation</h3><p>The first 100 records are used for fitting and the remaining 406 for testing. Each feature is standardized using the training subset mean and standard deviation. Zero training standard deviations are replaced by 1 to avoid division by zero.</p></div>
+      <div><h3>Evaluation</h3><p>Training and testing errors are reported as root mean squared error (RMSE). Hyperparameters in Questions 1(d) and 2(f) are chosen using 10-fold cross-validation on only the first 100 observations.</p></div>
+    </div>
+    <div class="equation">z<sub>j</sub> = (x<sub>j</sub> − μ<sub>j,train</sub>) / σ<sub>j,train</sub><br>RMSE = √[ (1 / N) Σ<sub>i=1…N</sub> (ŷ<sub>i</sub> − y<sub>i</sub>)<sup>2</sup> ]</div>
+    <div class="callout note"><strong>Data note.</strong> This historical dataset was provided for the assignment and has documented concerns about biased demographic and socioeconomic attributes. The analysis here is a methodological course exercise, not a recommendation to use this dataset for housing decisions.</div>
+  </section>
+
+  <section id="poly-a">
+    <span class="sec-tag">Part 1 · Question (a)</span>
+    <h2>Polynomial Basis Regression: Degrees 1–7</h2>
+    <p>For polynomial degree <em>p</em>, I use a bias term and separate powers of each of the 13 standardized features. As required, the basis contains <strong>no feature interactions or cross-terms</strong>.</p>
+    <div class="equation">ŷ(z) = w<sub>0</sub> + Σ<sub>j=1…13</sub> Σ<sub>k=1…p</sub> w<sub>jk</sub> z<sub>j</sub><sup>k</sup><small>Feature counts: 14 columns at degree 1; 92 columns at degree 7 (including the intercept).</small></div>
+    <p>Weights are fitted using unregularized least squares, and RMSE is evaluated independently on the training and testing subsets.</p>
+    <div class="table-wrap"><table><thead><tr><th>Polynomial degree</th><th>Training RMSE</th><th>Testing RMSE</th></tr></thead><tbody><tr><td>1</td><td>2.037201</td><td>36.44495</td></tr>
+<tr><td>2</td><td>1.578079</td><td>1.097188 × 10³</td></tr>
+<tr><td>3</td><td>1.449098</td><td>4.867282 × 10⁴</td></tr>
+<tr><td>4</td><td>1.270498</td><td>2.185931 × 10⁷</td></tr>
+<tr><td>5</td><td>1.096636</td><td>1.835804 × 10¹⁰</td></tr>
+<tr><td>6</td><td>1.072510</td><td>5.024089 × 10¹²</td></tr>
+<tr><td>7</td><td>0.881467</td><td>6.879332 × 10¹⁵</td></tr></tbody></table></div>
+    <figure class="figure large">
+      <img src="plots/polynomial_rmse_vs_degree.png" alt="Figure 1 · Polynomial degree and RMS error">
+      <figcaption><strong>Figure 1 · Polynomial degree and RMS error</strong><span>Logarithmic vertical axis is used because higher-degree testing errors span many orders of magnitude.</span></figcaption>
+    </figure>
+    <div class="callout result"><strong>Observation.</strong> Training RMSE falls from 2.0372 to 0.8815 as the degree rises, while test error increases from 36.44 to approximately 6.88 × 10¹⁵. The high-order unregularized models fit the training data increasingly well but generalize extremely poorly, consistent with severe overfitting and instability outside the training feature distribution. Among the tested degrees, degree 1 has the lowest test RMSE.</div>
+  </section>
+
+  <section id="poly-b">
+    <span class="sec-tag">Part 1 · Question (b)</span>
+    <h2>Degree-1 Model: Learned Weights</h2>
+    <p>The degree-1 basis is [1, z<sub>1</sub>, …, z<sub>13</sub>], so the coefficient on each feature measures the change in predicted MEDV for a one-training-standard-deviation increase in that feature, holding the others constant. The bias weight is explicitly included.</p>
+    <div class="table-wrap"><table><thead><tr><th>Coefficient</th><th>Feature</th><th>Learned value</th></tr></thead><tbody><tr><td>w₀</td><td>Bias (intercept)</td><td>22.309000</td></tr>
+<tr><td>w₁</td><td>CRIM</td><td>−1.337974</td></tr>
+<tr><td>w₂</td><td>ZN</td><td>+0.122993</td></tr>
+<tr><td>w₃</td><td>INDUS</td><td>−0.531065</td></tr>
+<tr><td>w₄</td><td>CHAS</td><td>0.000000</td></tr>
+<tr><td>w₅</td><td>NOX</td><td>+1.002651</td></tr>
+<tr><td>w₆</td><td>RM — average rooms</td><td>+4.195634</td></tr>
+<tr><td>w₇</td><td>AGE</td><td>−2.166275</td></tr>
+<tr><td>w₈</td><td>DIS — distance to employment</td><td>+0.010715</td></tr>
+<tr><td>w₉</td><td>RAD</td><td>−0.193778</td></tr>
+<tr><td>w₁₀</td><td>TAX</td><td>−0.348631</td></tr>
+<tr><td>w₁₁</td><td>PTRATIO</td><td>+0.261264</td></tr>
+<tr><td>w₁₂</td><td>B</td><td>+0.181073</td></tr>
+<tr><td>w₁₃</td><td>LSTAT</td><td>+0.148761</td></tr></tbody></table></div>
+    <div class="metrics"><div class="metric"><span>Bias w₀</span><strong>22.309000</strong></div><div class="metric"><span>Average rooms (RM)</span><strong>+4.195634</strong></div><div class="metric"><span>Employment distance (DIS)</span><strong>+0.010715</strong></div></div>
+    <p><strong>RM:</strong> A positive coefficient is reasonable: holding other standardized features constant, one training-standard-deviation increase in the average number of rooms is associated with about a $4,196 increase in predicted median value. <strong>DIS:</strong> The coefficient is almost zero, so weighted distance to employment centers contributes little additional linear prediction in this fitted model; its small positive sign should not be over-interpreted.</p>
+    <div class="callout note"><strong>Indexing clarification.</strong> According to <code>housing.names</code>, RM is the sixth dataset feature and DIS is the eighth. The assignment calls them the fifth and seventh; with our explicit bias column, they appear at <code>weights[6]</code> and <code>weights[8]</code>. The table labels both by their feature names to prevent ambiguity. CHAS receives weight zero because this training subset has no variation in CHAS.</div>
+  </section>
+
+  <section id="poly-c">
+    <span class="sec-tag">Part 1 · Question (c)</span>
+    <h2>One-Dimensional Polynomial Visualizations</h2>
+    <p>To make high-dimensional behavior visible, the regression is refitted using only <strong>the second normalized feature (ZN)</strong>, with degrees 1, 3, and 7. Each plot shows training observations, held-out testing observations, and the learned curve.</p>
+    <div class="table-wrap"><table><thead><tr><th>Degree</th><th>Training RMSE</th><th>Testing RMSE</th></tr></thead><tbody>
+      <tr><td>1</td><td>5.695083</td><td>9.352257</td></tr><tr><td>3</td><td>5.664927</td><td>9.434054</td></tr><tr><td>7</td><td>5.500617</td><td>10.423300</td></tr>
+    </tbody></table></div>
+    <div class="figure-grid"><figure class="figure ">
+      <img src="plots/polynomial_1d_degree_1.png" alt="Figure 2 · Degree 1">
+      <figcaption><strong>Figure 2 · Degree 1</strong><span>A single increasing straight-line fit using normalized ZN.</span></figcaption>
+    </figure>
+<figure class="figure ">
+      <img src="plots/polynomial_1d_degree_3.png" alt="Figure 3 · Degree 3">
+      <figcaption><strong>Figure 3 · Degree 3</strong><span>A mildly curved model with little test-error improvement.</span></figcaption>
+    </figure>
+<figure class="figure ">
+      <img src="plots/polynomial_1d_degree_7.png" alt="Figure 4 · Degree 7">
+      <figcaption><strong>Figure 4 · Degree 7</strong><span>Strong oscillations illustrate high-order model flexibility and poor generalization.</span></figcaption>
+    </figure></div>
+    <div class="callout result"><strong>Observation.</strong> Degree 1 gives a gently increasing line. Degree 3 adds moderate curvature, while degree 7 shows pronounced oscillations, especially between sparse observations. The small training RMSE improvement at degree 7 does not translate into better testing performance; the lowest test RMSE among these three is at degree 1.</div>
+  </section>
+
+  <section id="poly-d">
+    <span class="sec-tag">Part 1 · Question (d)</span>
+    <h2>Polynomial L2 Regularization: 10-Fold CV</h2>
+    <p>A degree-8 polynomial on the second feature (ZN) is fitted using L2-regularized least squares. The intercept is not penalized. The 100 training observations are split into 10 folds using seed 42; normalization is recomputed using each fold's fitting data, preventing leakage from validation observations.</p>
+    <div class="equation">J(w) = ‖Φw − y‖<sup>2</sup> + λ Σ<sub>j≥1</sub> w<sub>j</sub><sup>2</sup><small>λ ∈ {0, 0.01, 0.1, 1, 10, 100, 1000}. The plotted value is the mean validation-fold RMSE.</small></div>
+    <div class="table-wrap"><table><thead><tr><th>λ</th><th>Average validation RMSE</th></tr></thead><tbody><tr><td>0</td><td>12.419501</td></tr>
+<tr class="best-row"><td>0.01</td><td>5.805655</td></tr>
+<tr><td>0.1</td><td>8.779093</td></tr>
+<tr><td>1</td><td>9.657738</td></tr>
+<tr><td>10</td><td>10.216411</td></tr>
+<tr><td>100</td><td>9.315975</td></tr>
+<tr><td>1000</td><td>6.901574</td></tr></tbody></table></div>
+    <figure class="figure large">
+      <img src="plots/polynomial_regularization_cv.png" alt="Figure 5 · Polynomial ridge cross-validation">
+      <figcaption><strong>Figure 5 · Polynomial ridge cross-validation</strong><span>The dashed line represents λ = 0, which cannot be shown on a logarithmic horizontal scale.</span></figcaption>
+    </figure>
+    <div class="callout result"><strong>Chosen λ: 0.01.</strong> The lowest average validation RMSE is <strong>5.805655</strong>, compared with <strong>12.419501</strong> for λ = 0. This substantial improvement demonstrates how coefficient regularization can stabilize a high-degree model. Validation performance is not strictly monotonic in λ on this small subset.</div>
+  </section>
+
+  <section id="gauss-e">
+    <span class="sec-tag">Part 2 · Question (e)</span>
+    <h2>Gaussian Basis Regression: 5–95 Centers</h2>
+    <p>Gaussian basis functions replace the polynomial feature expansion. The centers are chosen as the first K entries of one reproducible random permutation of the training observations. All 13 standardized features are used, and no regularization is applied.</p>
+    <div class="equation">φ<sub>j</sub>(z) = exp(−‖z − c<sub>j</sub>‖<sup>2</sup> / (2σ<sup>2</sup>))<br>ŷ(z) = w<sub>0</sub> + Σ<sub>j=1…K</sub> w<sub>j</sub> φ<sub>j</sub>(z)<small>Width choice: σ = 4.624722, the median positive pairwise training distance after normalization; random seed = 42.</small></div>
+    <div class="table-wrap"><table><thead><tr><th>No. of basis functions (K)</th><th>Training RMSE</th><th>Testing RMSE</th></tr></thead><tbody><tr><td>5</td><td>3.546369</td><td>13.334609</td></tr>
+<tr><td>15</td><td>2.158441</td><td>9.086658</td></tr>
+<tr><td>25</td><td>1.629604</td><td>7.488790</td></tr>
+<tr class="best-row"><td>35</td><td>1.354419</td><td>7.426775</td></tr>
+<tr><td>45</td><td>1.233386</td><td>10.208066</td></tr>
+<tr><td>55</td><td>1.113216</td><td>9.860084</td></tr>
+<tr><td>65</td><td>1.082091</td><td>13.141845</td></tr>
+<tr><td>75</td><td>0.910347</td><td>7.780206</td></tr>
+<tr><td>85</td><td>0.677350</td><td>102.701264</td></tr>
+<tr><td>95</td><td>0.423764</td><td>197.634615</td></tr></tbody></table></div>
+    <figure class="figure large">
+      <img src="plots/gaussian_rmse_vs_basis.png" alt="Figure 6 · Number of Gaussian basis functions">
+      <figcaption><strong>Figure 6 · Number of Gaussian basis functions</strong><span>Training error decreases, while testing error becomes extremely large for K = 85 and 95.</span></figcaption>
+    </figure>
+    <div class="callout result"><strong>Observation.</strong> Training RMSE decreases steadily with K, reaching 0.423764 for 95 centers. The lowest testing RMSE on this comparison is <strong>7.426775 at K = 35</strong>. At K = 85 and 95, test RMSE rises sharply (102.70 and 197.63), indicating that highly flexible, unregularized Gaussian models can become unstable and generalize poorly.</div>
+  </section>
+
+  <section id="gauss-f">
+    <span class="sec-tag">Part 2 · Question (f)</span>
+    <h2>Gaussian L2 Regularization: 10-Fold CV</h2>
+    <p>Here I use <strong>K = 90 Gaussian basis functions</strong>, all 13 input features, and the same seven candidate λ values. Each of the 10 folds contains 90 fitting observations and 10 validation observations. The mean, standard deviation, Gaussian width, and centers are determined exclusively from each fold's fitting data; the same centers are used to evaluate every λ within a fold.</p>
+    <div class="equation">J(w) = ‖Φw − y‖<sup>2</sup> + λ Σ<sub>j≥1</sub> w<sub>j</sub><sup>2</sup><small>Ridge penalizes Gaussian weights but not the bias; average error is computed across the ten validation folds.</small></div>
+    <div class="table-wrap"><table><thead><tr><th>λ</th><th>Average validation RMSE</th></tr></thead><tbody><tr><td>0</td><td>9.218162</td></tr>
+<tr class="best-row"><td>0.01</td><td>1.814715</td></tr>
+<tr><td>0.1</td><td>2.045118</td></tr>
+<tr><td>1</td><td>2.561606</td></tr>
+<tr><td>10</td><td>3.191843</td></tr>
+<tr><td>100</td><td>4.352415</td></tr>
+<tr><td>1000</td><td>5.454169</td></tr></tbody></table></div>
+    <figure class="figure large">
+      <img src="plots/gaussian_regularization_cv.png" alt="Figure 7 · Gaussian ridge cross-validation">
+      <figcaption><strong>Figure 7 · Gaussian ridge cross-validation</strong><span>The λ = 0 result is shown separately as a dashed horizontal line.</span></figcaption>
+    </figure>
+    <div class="callout result"><strong>Chosen λ: 0.01.</strong> The average validation RMSE is <strong>1.814715</strong>, compared with <strong>9.218162</strong> without regularization — a reduction of approximately 80.3%. Beyond λ = 0.01, validation RMSE rises steadily across the tested positive values, suggesting that stronger penalties are overly restrictive for this configuration.</div>
+  </section>
+
+  <section id="conclusions">
+    <span class="sec-tag">Synthesis &amp; reproducibility</span>
+    <h2>Final Discussion</h2>
+    <div class="columns">
+      <div><h3>Model complexity</h3><p>For both polynomial and Gaussian bases, additional model complexity consistently reduces training error but can sharply increase testing error. Lower training RMSE by itself is not sufficient evidence of better prediction.</p></div>
+      <div><h3>Why regularization helps</h3><p>L2 penalties discourage large fitted weights. In both degree-8 ZN regression and 90-center Gaussian regression, cross-validation selected λ = 0.01 from the specified candidate values, outperforming the unregularized model.</p></div>
+    </div>
+    <div class="box"><strong>Method choices.</strong> All least-squares solutions use <code>numpy.linalg.lstsq</code>; positive λ is solved through an augmented least-squares system. The intercept is unpenalized. The first 100 records form the only fitting/CV pool. Random seed 42 fixes fold permutations and Gaussian centers. Gaussian width is selected by median positive pairwise Euclidean distance. These choices make the reported experiments reproducible.</div>
+    <p class="small">Interpretation caveat: Test RMSE and cross-validation RMSE are estimated from different evaluation splits and model configurations, so they should not be treated as directly comparable estimates. This assignment uses an intentionally unusual ordered 100/406 split and a historical dataset with documented social-bias concerns.</p>
+    <div class="file-links"><a href="Part_1.py">Part 1 source code</a><a href="Part_2.py">Part 2 source code</a><a href="housing.data">Dataset</a><a href="housing.names">Dataset description</a></div>
+  </section>
+
+  <section id="source-code">
+    <span class="sec-tag">Appendix · Complete implementation</span>
+    <h2>Full Python Source Code</h2>
+    <div class="source-intro"><strong>Both scripts are reproduced in full below.</strong> These are plain, always-visible code blocks — there are no expand/collapse controls, inner scroll windows, or external code-loading requests. The code also remains fully visible when the page is printed to PDF. The files are available individually through the links below.</div>
+    <div class="file-links"><a href="Part_1.py" download>Download Part_1.py</a><a href="Part_2.py" download>Download Part_2.py</a></div>
+    <div class="code-heading">Part_1.py — Polynomial basis regression, Questions 1(a)–1(d)</div>
+    <pre class="source"><code>&quot;&quot;&quot;SYDE 572 Assignment 2 — Part 1: polynomial basis regression.
+
+Reproducible implementation of Questions 1(a)–1(d).
+Requires numpy, matplotlib, and housing.data in the same folder.
+&quot;&quot;&quot;
+
+from pathlib import Path
+import numpy as np
+import matplotlib.pyplot as plt
+
+BASE_DIR = Path(__file__).resolve().parent
+PLOTS_DIR = BASE_DIR / &quot;plots&quot;
+PLOTS_DIR.mkdir(exist_ok=True)
+
+data = np.loadtxt(BASE_DIR / &quot;housing.data&quot;)
+X, y = data[:, :13], data[:, 13]
+X_train, y_train = X[:100], y[:100]
+X_test, y_test = X[100:], y[100:]
+
+# Normalize using the first 100 training observations only.
+train_mean = X_train.mean(axis=0)
+train_std = X_train.std(axis=0)
+train_std[train_std == 0] = 1.0
+X_train_norm = (X_train - train_mean) / train_std
+X_test_norm = (X_test - train_mean) / train_std
+
+print(&quot;Dataset shape:&quot;, data.shape)
+print(&quot;Training shape:&quot;, X_train_norm.shape)
+print(&quot;Testing shape:&quot;, X_test_norm.shape)
+
+
+def rmse(y_true, y_pred):
+    &quot;&quot;&quot;Root mean squared prediction error.&quot;&quot;&quot;
+    return float(np.sqrt(np.mean((y_true - y_pred) ** 2)))
+
+
+def polynomial_features(X, degree):
+    &quot;&quot;&quot;Bias + univariate monomials, with no interaction/cross-terms.&quot;&quot;&quot;
+    columns = [np.ones(X.shape[0])]
+    for power in range(1, degree + 1):
+        for j in range(X.shape[1]):
+            columns.append(X[:, j] ** power)
+    return np.column_stack(columns)
+
+
+def polynomial_regression(X_fit, y_fit, X_eval, y_eval, degree):
+    &quot;&quot;&quot;Unregularized least-squares polynomial regression.&quot;&quot;&quot;
+    Phi_fit = polynomial_features(X_fit, degree)
+    Phi_eval = polynomial_features(X_eval, degree)
+    weights, _, _, _ = np.linalg.lstsq(Phi_fit, y_fit, rcond=None)
+    return (
+        weights,
+        rmse(y_fit, Phi_fit @ weights),
+        rmse(y_eval, Phi_eval @ weights),
+    )
+
+
+# Question 1(a): degrees 1 through 7, all 13 normalized features.
+degrees = list(range(1, 8))
+poly_train_errors, poly_test_errors = [], []
+print(&quot;\nQuestion 1(a): Polynomial Regression&quot;)
+for degree in degrees:
+    weights, train_error, test_error = polynomial_regression(
+        X_train_norm, y_train, X_test_norm, y_test, degree
+    )
+    poly_train_errors.append(train_error)
+    poly_test_errors.append(test_error)
+    print(f&quot;Degree {degree}: Train RMSE = {train_error:.6f}, &quot;
+          f&quot;Test RMSE = {test_error:.6e}&quot;)
+
+plt.figure(figsize=(10, 6))
+plt.plot(degrees, poly_train_errors, marker=&quot;o&quot;, linewidth=2, label=&quot;Training RMSE&quot;)
+plt.plot(degrees, poly_test_errors, marker=&quot;s&quot;, linewidth=2, label=&quot;Testing RMSE&quot;)
+plt.yscale(&quot;log&quot;)
+plt.xticks(degrees)
+plt.xlabel(&quot;Polynomial Degree&quot;)
+plt.ylabel(&quot;RMSE (log scale)&quot;)
+plt.title(&quot;Polynomial Regression: Training vs Testing Error&quot;)
+plt.grid(True, which=&quot;both&quot;, alpha=0.25)
+plt.legend()
+plt.tight_layout()
+plt.savefig(PLOTS_DIR / &quot;polynomial_rmse_vs_degree.png&quot;, dpi=190, bbox_inches=&quot;tight&quot;)
+plt.close()
+
+# Question 1(b): degree-1 weights, including bias.
+feature_names = [
+    &quot;CRIM&quot;, &quot;ZN&quot;, &quot;INDUS&quot;, &quot;CHAS&quot;, &quot;NOX&quot;, &quot;RM&quot;, &quot;AGE&quot;, &quot;DIS&quot;,
+    &quot;RAD&quot;, &quot;TAX&quot;, &quot;PTRATIO&quot;, &quot;B&quot;, &quot;LSTAT&quot;
+]
+weights, _, _ = polynomial_regression(
+    X_train_norm, y_train, X_test_norm, y_test, degree=1
+)
+print(&quot;\nQuestion 1(b): Degree-1 Weights&quot;)
+print(f&quot;Bias (w0): {weights[0]:.6f}&quot;)
+for i, name in enumerate(feature_names):
+    print(f&quot;{name:8s}: {weights[i + 1]:.6f}&quot;)
+print(f&quot;\nRM coefficient:  {weights[6]:.6f}&quot;)
+print(f&quot;DIS coefficient: {weights[8]:.6f}&quot;)
+
+
+# Question 1(c): plot the normalized second feature (ZN) alone.
+def polynomial_regression_1d_vis(degree, feature_index=1):
+    X_fit = X_train_norm[:, feature_index:feature_index + 1]
+    X_eval = X_test_norm[:, feature_index:feature_index + 1]
+    weights, train_error, test_error = polynomial_regression(
+        X_fit, y_train, X_eval, y_test, degree
+    )
+    x_min = min(X_fit.min(), X_eval.min())
+    x_max = max(X_fit.max(), X_eval.max())
+    grid = np.linspace(x_min, x_max, 500).reshape(-1, 1)
+    fitted_curve = polynomial_features(grid, degree) @ weights
+
+    plt.figure(figsize=(10, 6))
+    plt.scatter(X_fit[:, 0], y_train, alpha=0.65, s=38, label=&quot;Training Data&quot;)
+    plt.scatter(X_eval[:, 0], y_test, alpha=0.35, s=27, label=&quot;Testing Data&quot;)
+    plt.plot(grid[:, 0], fitted_curve, linewidth=2.7,
+             label=f&quot;Degree {degree} Polynomial&quot;)
+    plt.xlabel(&quot;Normalized ZN (Second Feature)&quot;)
+    plt.ylabel(&quot;Median House Value ($1000s)&quot;)
+    plt.title(f&quot;1D Polynomial Regression — Degree {degree}&quot;)
+    plt.legend()
+    plt.grid(True, alpha=0.25)
+    plt.tight_layout()
+    plt.savefig(PLOTS_DIR / f&quot;polynomial_1d_degree_{degree}.png&quot;,
+                dpi=190, bbox_inches=&quot;tight&quot;)
+    plt.close()
+    return train_error, test_error
+
+print(&quot;\nQuestion 1(c): 1D Polynomial Regression&quot;)
+for degree in [1, 3, 7]:
+    train_error, test_error = polynomial_regression_1d_vis(degree)
+    print(f&quot;Degree {degree}: Training RMSE = {train_error:.6f}, &quot;
+          f&quot;Testing RMSE = {test_error:.6f}&quot;)
+
+
+# Question 1(d): degree-8 ridge regression and 10-fold CV on ZN only.
+def polynomial_regression_reg(X_fit, y_fit, degree, lam):
+    &quot;&quot;&quot;Ridge fit via augmented least squares; intercept is not penalized.&quot;&quot;&quot;
+    Phi = polynomial_features(X_fit, degree)
+    if lam == 0:
+        return np.linalg.lstsq(Phi, y_fit, rcond=None)[0]
+    penalty = np.eye(Phi.shape[1])
+    penalty[0, 0] = 0.0
+    A = np.vstack([Phi, np.sqrt(lam) * penalty])
+    b = np.concatenate([y_fit, np.zeros(Phi.shape[1])])
+    return np.linalg.lstsq(A, b, rcond=None)[0]
+
+lambdas = [0, 0.01, 0.1, 1, 10, 100, 1000]
+X_1d_raw = X_train[:, 1]
+rng = np.random.default_rng(42)
+folds = np.array_split(rng.permutation(len(y_train)), 10)
+average_errors = []
+print(&quot;\nQuestion 1(d): 10-Fold Cross-Validation&quot;)
+for lam in lambdas:
+    fold_errors = []
+    for val_indices in folds:
+        fit_indices = np.setdiff1d(np.arange(len(y_train)), val_indices)
+        x_fit, x_val = X_1d_raw[fit_indices], X_1d_raw[val_indices]
+        y_fit, y_val = y_train[fit_indices], y_train[val_indices]
+
+        # Fit normalization parameters on each fold&#x27;s fitting data only.
+        fold_mean, fold_std = x_fit.mean(), x_fit.std()
+        if fold_std == 0:
+            fold_std = 1.0
+        x_fit = ((x_fit - fold_mean) / fold_std).reshape(-1, 1)
+        x_val = ((x_val - fold_mean) / fold_std).reshape(-1, 1)
+
+        ridge_weights = polynomial_regression_reg(x_fit, y_fit, 8, lam)
+        val_prediction = polynomial_features(x_val, 8) @ ridge_weights
+        fold_errors.append(rmse(y_val, val_prediction))
+    average_errors.append(float(np.mean(fold_errors)))
+    print(f&quot;Lambda = {lam:7g}, &quot;
+          f&quot;Average Validation RMSE = {average_errors[-1]:.6f}&quot;)
+
+best_lambda = lambdas[int(np.argmin(average_errors))]
+print(f&quot;\nBest lambda: {best_lambda}&quot;)
+plt.figure(figsize=(10, 6))
+plt.semilogx(lambdas[1:], average_errors[1:], marker=&quot;o&quot;, linewidth=2,
+             label=&quot;Average Validation RMSE&quot;)
+plt.axhline(average_errors[0], linestyle=&quot;--&quot;,
+            label=f&quot;Unregularized (lambda = 0): {average_errors[0]:.3f}&quot;)
+plt.xlabel(&quot;Regularization Parameter (lambda)&quot;)
+plt.ylabel(&quot;Average Validation RMSE&quot;)
+plt.title(&quot;Degree-8 Polynomial Regression: 10-Fold CV&quot;)
+plt.grid(True, which=&quot;both&quot;, alpha=0.25)
+plt.legend()
+plt.tight_layout()
+plt.savefig(PLOTS_DIR / &quot;polynomial_regularization_cv.png&quot;,
+            dpi=190, bbox_inches=&quot;tight&quot;)
+plt.close()
+</code></pre>
+    <div class="code-heading">Part_2.py — Gaussian basis regression, Questions 2(e)–2(f)</div>
+    <pre class="source"><code>&quot;&quot;&quot;SYDE 572 Assignment 2 — Part 2: Gaussian basis regression.
+
+Reproducible implementation of Questions 2(e)–2(f).
+Gaussian widths are median positive pairwise distances in normalized training data.
+Requires numpy, matplotlib, and housing.data in the same folder.
+&quot;&quot;&quot;
+
+from pathlib import Path
+import numpy as np
+import matplotlib.pyplot as plt
+
+BASE_DIR = Path(__file__).resolve().parent
+PLOTS_DIR = BASE_DIR / &quot;plots&quot;
+PLOTS_DIR.mkdir(exist_ok=True)
+
+data = np.loadtxt(BASE_DIR / &quot;housing.data&quot;)
+X, y = data[:, :13], data[:, 13]
+X_train, y_train = X[:100], y[:100]
+X_test, y_test = X[100:], y[100:]
+
+train_mean = X_train.mean(axis=0)
+train_std = X_train.std(axis=0)
+train_std[train_std == 0] = 1.0
+X_train_norm = (X_train - train_mean) / train_std
+X_test_norm = (X_test - train_mean) / train_std
+
+
+def rmse(y_true, y_pred):
+    return float(np.sqrt(np.mean((y_true - y_pred) ** 2)))
+
+
+def gaussian_basis(X, centers, sigma):
+    &quot;&quot;&quot;Bias + K radial Gaussian features.&quot;&quot;&quot;
+    difference = X[:, None, :] - centers[None, :, :]
+    distance_squared = np.sum(difference ** 2, axis=2)
+    gaussian_values = np.exp(-distance_squared / (2 * sigma ** 2))
+    return np.column_stack([np.ones(len(X)), gaussian_values])
+
+
+def median_width(X_fit):
+    &quot;&quot;&quot;Median nonzero distance among distinct fitting samples.&quot;&quot;&quot;
+    difference = X_fit[:, None, :] - X_fit[None, :, :]
+    distances = np.sqrt(np.sum(difference ** 2, axis=2))
+    upper = distances[np.triu_indices(len(X_fit), k=1)]
+    positive_distances = upper[upper &gt; 0]
+    return float(np.median(positive_distances))
+
+
+def gaussian_regression(X_fit, y_fit, X_eval, y_eval, centers, sigma):
+    &quot;&quot;&quot;Unregularized Gaussian least squares.&quot;&quot;&quot;
+    Phi_fit = gaussian_basis(X_fit, centers, sigma)
+    Phi_eval = gaussian_basis(X_eval, centers, sigma)
+    weights, _, _, _ = np.linalg.lstsq(Phi_fit, y_fit, rcond=None)
+    return (
+        weights,
+        rmse(y_fit, Phi_fit @ weights),
+        rmse(y_eval, Phi_eval @ weights),
+    )
+
+
+# Question 2(e): K in {5, 15, ..., 95}, no regularization.
+sigma = median_width(X_train_norm)
+print(&quot;Question 2(e): Gaussian Regression&quot;)
+print(f&quot;Gaussian width (sigma): {sigma:.6f}&quot;)
+
+rng = np.random.default_rng(42)
+permutation = rng.permutation(len(X_train_norm))
+basis_counts = list(range(5, 100, 10))
+train_errors, test_errors = [], []
+for K in basis_counts:
+    centers = X_train_norm[permutation[:K]]
+    weights, train_error, test_error = gaussian_regression(
+        X_train_norm, y_train, X_test_norm, y_test, centers, sigma
+    )
+    train_errors.append(train_error)
+    test_errors.append(test_error)
+    print(f&quot;K = {K:2d}: Training RMSE = {train_error:.6f}, &quot;
+          f&quot;Testing RMSE = {test_error:.6f}&quot;)
+
+plt.figure(figsize=(10, 6))
+plt.plot(basis_counts, train_errors, marker=&quot;o&quot;, linewidth=2,
+         label=&quot;Training RMSE&quot;)
+plt.plot(basis_counts, test_errors, marker=&quot;s&quot;, linewidth=2,
+         label=&quot;Testing RMSE&quot;)
+plt.xticks(basis_counts)
+plt.xlabel(&quot;Number of Gaussian Basis Functions&quot;)
+plt.ylabel(&quot;RMSE&quot;)
+plt.title(&quot;Gaussian Regression: Training vs Testing Error&quot;)
+plt.grid(True, alpha=0.25)
+plt.legend()
+plt.tight_layout()
+plt.savefig(PLOTS_DIR / &quot;gaussian_rmse_vs_basis.png&quot;, dpi=190,
+            bbox_inches=&quot;tight&quot;)
+plt.close()
+
+
+# Question 2(f): 90 basis functions, ridge regression, 10-fold CV.
+def gaussian_regression_reg(X_fit, y_fit, centers, sigma, lam):
+    &quot;&quot;&quot;Ridge Gaussian least-squares; intercept excluded from the penalty.&quot;&quot;&quot;
+    Phi = gaussian_basis(X_fit, centers, sigma)
+    if lam == 0:
+        return np.linalg.lstsq(Phi, y_fit, rcond=None)[0]
+    penalty = np.eye(Phi.shape[1])
+    penalty[0, 0] = 0.0
+    A = np.vstack([Phi, np.sqrt(lam) * penalty])
+    b = np.concatenate([y_fit, np.zeros(Phi.shape[1])])
+    return np.linalg.lstsq(A, b, rcond=None)[0]
+
+lambdas = [0, 0.01, 0.1, 1, 10, 100, 1000]
+K = 90
+rng = np.random.default_rng(42)
+fold_indices = rng.permutation(len(X_train))
+folds = np.array_split(fold_indices, 10)
+validation_errors = {lam: [] for lam in lambdas}
+
+print(&quot;\nQuestion 2(f): Gaussian Regularization&quot;)
+for fold_index in range(10):
+    val_indices = folds[fold_index]
+    fit_indices = np.concatenate([
+        folds[j] for j in range(10) if j != fold_index
+    ])
+    X_fit, X_val = X_train[fit_indices], X_train[val_indices]
+    y_fit, y_val = y_train[fit_indices], y_train[val_indices]
+
+    # Prevent validation leakage: normalize using fitting observations.
+    fold_mean = X_fit.mean(axis=0)
+    fold_std = X_fit.std(axis=0)
+    fold_std[fold_std == 0] = 1.0
+    X_fit_norm = (X_fit - fold_mean) / fold_std
+    X_val_norm = (X_val - fold_mean) / fold_std
+    sigma_fold = median_width(X_fit_norm)
+
+    # 90 training points per fold; all 90 are eligible centers.
+    # Keep the same randomly ordered centers for every lambda in a fold.
+    center_indices = rng.permutation(len(X_fit_norm))[:K]
+    centers = X_fit_norm[center_indices]
+    Phi_val = gaussian_basis(X_val_norm, centers, sigma_fold)
+
+    for lam in lambdas:
+        weights = gaussian_regression_reg(
+            X_fit_norm, y_fit, centers, sigma_fold, lam
+        )
+        validation_errors[lam].append(rmse(y_val, Phi_val @ weights))
+
+average_errors = []
+for lam in lambdas:
+    avg_error = float(np.mean(validation_errors[lam]))
+    average_errors.append(avg_error)
+    print(f&quot;Lambda = {lam:7g}, Average Validation RMSE = {avg_error:.6f}&quot;)
+best_lambda = lambdas[int(np.argmin(average_errors))]
+print(f&quot;\nBest lambda: {best_lambda}&quot;)
+
+plt.figure(figsize=(10, 6))
+plt.semilogx(lambdas[1:], average_errors[1:], marker=&quot;o&quot;, linewidth=2,
+             label=&quot;Average Validation RMSE&quot;)
+plt.axhline(average_errors[0], linestyle=&quot;--&quot;,
+            label=f&quot;Unregularized (lambda = 0): {average_errors[0]:.3f}&quot;)
+plt.xlabel(&quot;Regularization Parameter (lambda)&quot;)
+plt.ylabel(&quot;Average Validation RMSE&quot;)
+plt.title(&quot;Gaussian Regression: 10-Fold Cross-Validation&quot;)
+plt.grid(True, which=&quot;both&quot;, alpha=0.25)
+plt.legend()
+plt.tight_layout()
+plt.savefig(PLOTS_DIR / &quot;gaussian_regularization_cv.png&quot;, dpi=190,
+            bbox_inches=&quot;tight&quot;)
+plt.close()
+</code></pre>
+  </section>
+  </main>
+  <footer>SYDE 572 — Assignment 2 · Zoey-Qixuan Yang · Student #: 21001900<br>Educational analysis of a historical housing benchmark · All plots generated with Python.</footer>
+</body></html>
