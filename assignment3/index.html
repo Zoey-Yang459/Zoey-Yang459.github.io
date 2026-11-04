@@ -1,0 +1,630 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SYDE 572 · Assignment 3 | PCA &amp; ISOMAP</title>
+<meta name="description" content="SYDE 572 Assignment 3: hand PCA, Iris data visualization, PCA axes, explained variance, ISOMAP comparison, and complete Python source code.">
+
+<style>
+:root{--ink:#192b43;--muted:#586d83;--navy:#112b47;--blue:#2b64a9;--teal:#127f87;--light:#eff5fd;--paper:#f3f6fa;--line:#d9e5f0;--green:#0e7866;--white:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.69 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}a{color:#2567ab}a:hover{text-decoration:underline}code{font:0.9em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#edf3f9;padding:1px 4px;border-radius:4px}
+.hero{padding:67px max(22px,calc((100vw - 1160px)/2)) 58px;background:linear-gradient(115deg,#102b48,#194b78 62%,#147a82);color:white}.hero .kicker{font-size:12px;letter-spacing:.20em;font-weight:800;text-transform:uppercase;color:#c0e8ea}.hero h1{font-size:clamp(36px,5.1vw,64px);letter-spacing:-.045em;line-height:1.10;margin:14px 0 16px}.hero .subtitle{font-size:19px;max-width:810px;color:#d7e8f4}.hero-meta{display:flex;flex-wrap:wrap;gap:9px;margin:23px 0 0}.hero-meta span{border-radius:999px;padding:6px 12px;border:1px solid #fff4;background:#fff2;font-size:12px;font-weight:650}
+nav{position:sticky;z-index:15;top:0;background:#fffffffa;border-bottom:1px solid var(--line);box-shadow:0 3px 14px #19334c0a}.nav-inner{max-width:1160px;margin:auto;padding:8px 14px;display:flex;white-space:nowrap;overflow-x:auto;align-items:center;gap:3px}.nav-inner a{font-size:12px;padding:7px 10px;display:block;border-radius:7px;text-decoration:none;color:#425774;font-weight:750}.nav-inner a:hover{background:#eaf2fb;color:#185d97}.nav-inner .crosslink{color:#0e6970}
+main{max-width:1160px;margin:30px auto 60px;padding:0 16px}section{scroll-margin-top:76px;margin:0 0 23px;padding:35px 39px;background:white;border:1px solid var(--line);border-radius:17px;box-shadow:0 4px 23px #132e4b09}h2{font-size:clamp(27px,3vw,34px);letter-spacing:-.025em;line-height:1.25;margin:0 0 14px;color:#122d49}h3{font-size:19px;line-height:1.3;margin:26px 0 10px;color:#243e5a}p{margin:10px 0 15px}.lead{font-size:16px;color:#405970;max-width:940px}.eyebrow-blue{display:inline-block;color:#2366ad;background:#eaf3ff;letter-spacing:.09em;font-size:11px;font-weight:850;border-radius:6px;padding:5px 10px;margin:0 0 14px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:25px 0}.stat{border:1px solid var(--line);background:#fafdff;border-radius:12px;padding:18px}.stat strong{display:block;font-size:27px;line-height:1.2;color:var(--navy);letter-spacing:-.04em}.stat span{font-size:12px;color:var(--muted);font-weight:650}.two-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0}.info,.worked{background:#f8fbff;border:1px solid #dceaf7;border-radius:12px;padding:16px 19px}.info h3{font-size:16px;margin:0 0 7px}.info p{margin:0}.worked-label{font-weight:800;color:#24639a;letter-spacing:.06em;font-size:12px}
+.notice{background:#f0f6fd;padding:13px 18px;border:1px solid #dae6f3;border-radius:10px;margin:20px 0}.equation{background:#f3f8ff;border:1px solid #dae6f6;border-radius:12px;padding:15px 20px;margin:18px 0;text-align:center;color:#173e6d;font-size:16px;overflow-x:auto}.equation mjx-container{max-width:100%;overflow-x:auto;overflow-y:hidden}.equation .eq-note{font:13px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#4c627b;margin:7px 0 2px}.worked .equation{background:#fff;padding:12px 3px;border-color:#e0e9f4;font-size:14px;margin:12px 0}.callout{border-left:4px solid #2169b2;padding:14px 18px;border-radius:0 10px 10px 0;background:#eff5fe;margin:19px 0}.callout.good{background:#edf8f5;border-left-color:#148775}.callout.warning{background:#fff9ed;border-left-color:#c68c36}
+.table-wrap{margin:18px 0 25px;overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #dae5f0}th{background:#eaf2fc;color:#213b59;font-size:12px;font-weight:850}tbody tr:nth-child(even){background:#f9fbfe}tbody tr.best-row{background:#e9f7f3!important;font-weight:800}.figure-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:16px 0}.figure{margin:22px 0;border:1px solid var(--line);background:white;border-radius:12px;overflow:hidden}.figure img{display:block;width:100%;height:auto;object-fit:contain}.figure figcaption{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line);font-size:12px;line-height:1.55;color:var(--muted);padding:11px 15px 14px}.figure figcaption strong{color:#223e58;font-size:13px}.figure.wide{max-width:970px;margin:20px auto}.figure.portrait{max-width:725px;margin:20px auto}
+.retention{border:1px solid var(--line);border-radius:12px;background:#fafcff;padding:18px 20px;margin:25px 0}.retention-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:12px;align-items:center;font-weight:750}.retention-head strong{font-size:21px;color:#0e7168}.retention-bar{display:flex;width:100%;height:19px;border-radius:6px;overflow:hidden;background:#e0e8ef}.retention-bar span{height:100%;display:block}.bar-pc1{background:#255ab9}.bar-pc2{background:#4bb0c0}.bar-rest{flex:1;background:#d5e0ed}.bar-legend{display:flex;flex-wrap:wrap;gap:15px;margin-top:10px;color:#586c81;font-size:12px}.legend-chip{display:inline-block;width:11px;height:11px;vertical-align:middle;border-radius:2px;margin-right:4px}.legend-chip.pc1{background:#255ab9}.legend-chip.pc2{background:#4bb0c0}.legend-chip.rest{background:#d5e0ed}.method-strip{display:grid;grid-template-columns:repeat(3,1fr);border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#f7fbff;margin:20px 0}.method-strip div{padding:15px;text-align:center;border-right:1px solid var(--line)}.method-strip div:last-child{border-right:0}.method-strip strong{display:block;color:#174473;font-size:23px;line-height:1.1}.method-strip span{font-size:12px;color:var(--muted)}.file-links{display:flex;flex-wrap:wrap;gap:10px;margin:17px 0}.file-links a{border:1px solid #bbcee4;background:#eef6ff;color:#205887;border-radius:9px;font-weight:800;font-size:13px;padding:8px 13px;text-decoration:none}.file-links a:hover{background:#e0f0ff}.code-heading{display:flex;flex-wrap:wrap;gap:9px;align-items:baseline;border:1px solid #cadaed;background:#e9f2fc;border-radius:10px 10px 0 0;margin:28px 0 0;padding:13px 18px;font-size:15px}.code-heading span{font-size:12px;font-weight:500;color:#637a90}.source{margin:0 0 21px;background:#14243a;color:#e5edf5;border:1px solid #34506e;border-radius:0 0 11px 11px;padding:20px 22px;font-size:11.5px;line-height:1.5;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;overflow:visible;max-height:none}.source code{background:transparent;color:inherit;padding:0;white-space:inherit;font-size:inherit}footer{text-align:center;color:#687d91;font-size:12px;padding:7px 20px 46px}
+@media(max-width:810px){.hero{padding:45px 20px}.hero h1{font-size:37px}.hero .subtitle{font-size:16px}section{padding:26px 19px}.stats{grid-template-columns:repeat(2,1fr)}.figure-grid,.two-col{grid-template-columns:1fr}.method-strip{grid-template-columns:repeat(3,1fr)}.method-strip strong{font-size:17px}.equation{font-size:14px;padding:12px 8px}h2{font-size:26px}}
+@page{size:Letter;margin:.63in .61in .65in}
+@media print{html,body{background:white!important;color:#172c41!important;font-size:10.4pt;line-height:1.55;-webkit-print-color-adjust:exact;print-color-adjust:exact}nav{display:none!important}.hero{padding:23px 26px!important;background:#183957!important;color:white!important}.hero h1{font-size:29pt;margin:8px 0 12px}.hero .subtitle{font-size:12pt}.hero-meta{margin-top:12px}.hero-meta span{font-size:8.5pt;padding:4px 8px}main{max-width:none;margin:0;padding:0}section{border:none;box-shadow:none;border-radius:0;margin:0;padding:17px 4px;break-inside:auto}h2{font-size:19pt}h3{font-size:13.5pt;break-after:avoid}.eyebrow-blue{font-size:8.5pt}.stats,.two-col,.worked,.table-wrap,.figure,.equation,.method-strip,.retention{break-inside:avoid}.figure{max-width:95%!important;margin:11px auto!important}.figure img{max-height:5.7in;object-fit:contain}.figure.portrait{max-width:66%!important}.figure-grid{grid-template-columns:1fr;gap:10px}.figure-grid .figure{max-width:80%!important}.figure figcaption{font-size:9pt}.stat{padding:8px}.stat strong{font-size:17pt}.stat span{font-size:9pt}.equation{padding:9px;font-size:12pt;overflow:visible}.equation .eq-note{font-size:9pt}table{font-size:9pt}th,td{padding:5px 7px}.file-links{display:none}.sources{break-before:page}.code-heading{break-after:avoid;margin:16px 0 0;font-size:11pt}.code-heading span{font-size:9pt}.source{max-height:none!important;overflow:visible!important;overflow-wrap:anywhere;white-space:pre-wrap;word-break:break-word;background:white;color:#172c41;border:1px solid #cadae8;padding:11px 12px;font-size:7.1pt;line-height:1.30;break-inside:auto}.source code{white-space:inherit}.callout{break-inside:avoid}footer{padding-top:5px}}
+
+.equation img.display-math{display:block;margin:2px auto;max-width:100%;width:auto;height:auto}
+img.inline-math{display:inline-block;vertical-align:-0.19em;max-height:1.45em;max-width:100%;width:auto;height:auto}
+@media print{.equation img.display-math{max-width:100%;max-height:1.2in}}
+
+/* Part 1 original handwritten work: full, sequential, legible pages. */
+.handwritten-link {margin:20px 0 16px;line-height:1.8}
+.handwritten-link a {font-weight:700}
+.handwritten-pages {display:flex;flex-direction:column;gap:24px;margin:24px auto 0}
+.handwritten-page {max-width:825px;width:100%;margin:0 auto;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 2px 13px #112c480b;overflow:hidden}
+.handwritten-page a {display:block;background:#fff}
+.handwritten-page img {display:block;width:100%;height:auto;object-fit:contain}
+.handwritten-page figcaption {font-size:12px;color:var(--muted);padding:12px 18px;border-top:1px solid var(--line);text-align:center;font-weight:650}
+@media print {
+ .handwritten-section {break-before:page}
+ .handwritten-pages {gap:0;margin-top:8px}
+ .handwritten-page {width:100%!important;max-width:100%!important;border:0;box-shadow:none;border-radius:0;overflow:visible;break-inside:avoid;break-before:page;margin:0 auto!important}
+ .handwritten-page img {width:auto!important;height:auto!important;max-width:100%!important;max-height:9.15in!important;margin:auto;object-fit:contain}
+ .handwritten-page figcaption {font-size:8pt;padding:4px;border:none}
+}
+</style></head><body>
+<header class="hero" id="top"><div class="kicker">UNIVERSITY OF WATERLOO · SYDE 572</div>
+<h1>Assignment 3<br>Principal Component Analysis</h1>
+<div class="subtitle">From PCA by hand to Iris data visualization, variance-preserving compression, and a nonlinear ISOMAP comparison.</div>
+<div class="hero-meta"><span>Zoey-Qixuan Yang</span><span>Student #21001900</span><span>5 parts · 25 marks</span><span>Python · NumPy · scikit-learn</span></div></header>
+<nav><div class="nav-inner">
+<a href="#overview">Overview</a><a href="#part1">1 · By Hand</a><a href="#part2">2 · Iris Plots</a><a href="#part3">3 · PCA</a><a href="#part4">4 · Compression</a><a href="#part5">5 · ISOMAP</a><a href="#conclusion">Discussion</a><a href="#handwritten-solutions">Handwritten PDF</a><a href="#source-code">Full Code</a><a href="../" class="crosslink">Assignment 1</a><a href="../assignment2/" class="crosslink">Assignment 2</a>
+</div></nav>
+<main>
+<section id="overview">
+ <div class="eyebrow-blue">METHODS &amp; DATASET</div>
+ <h2>Overview</h2>
+ <p class="lead">This assignment investigates how linear <strong>principal component analysis (PCA)</strong> and nonlinear <strong>ISOMAP</strong> reduce dimensionality, preserve information, and reveal the structure of the Iris dataset. It includes a complete manual PCA example, numerical verification, species visualizations, and reproducible Python code.</p>
+ <div class="stats">
+  <div class="stat"><strong>5</strong><span>Assignment parts</span></div>
+  <div class="stat"><strong>150</strong><span>Iris samples</span></div>
+  <div class="stat"><strong>4 → 2</strong><span>PCA dimensionality</span></div>
+  <div class="stat"><strong>97.77%</strong><span>Variance retained</span></div>
+ </div>
+ <div class="two-col">
+  <div class="info"><h3>Preprocessing</h3><p>For Parts 2–5, the original Iris measurements are used in centimetres. <strong>PCA automatically mean-centers</strong> these features; their variances are <strong>not z-score standardized</strong>. The three species labels are used only to color visualizations and evaluate cluster separation.</p></div>
+  <div class="info"><h3>Dimensionality reduction</h3><p>Parts 3 and 4 use the same four-dimensional PCA fit. In Part 5, both PCA and ISOMAP produce two-dimensional representations from the same original Iris data, and ISOMAP is fitted with exactly <strong>three nearest neighbors</strong>.</p></div>
+ </div>
+ <div class="notice"><strong>Original data:</strong> The UCI <a href="https://archive.ics.uci.edu/dataset/53/iris" target="_blank" rel="noopener">Iris dataset</a> (also available in <code>sklearn.datasets.load_iris</code>). The assignment's hand-calculation dataset is shown separately in Part 1.</div>
+</section>
+
+<section id="part1">
+ <div class="eyebrow-blue">PART 01 · PCA BY HAND</div>
+ <h2>First principal component and reconstruction errors</h2>
+ <p class="lead">Five observations with two features each lie on a straight line. The goal is to determine the unit-length direction that minimizes orthogonal projection error, then reconstruct two new points using PC1.</p>
+ <div class="notice handwritten-link">
+  <strong>Checked handwritten calculations (Part 1):</strong>
+  Your original three-page handwritten solution is included with this submission.
+  <a href="Assignments3-Part1.pdf" target="_blank" rel="noopener">View the original PDF</a>
+  · <a href="Assignments3-Part1.pdf" download>Download PDF</a>.
+  All three pages are displayed in full <a href="#handwritten-solutions">before the code appendix</a>.
+ </div>
+ <h3>Given dataset</h3>
+<div class="table-wrap"><table><thead><tr><th>Observation</th><th>x₁</th><th>x₂</th></tr></thead><tbody><tr><td>1</td><td>−2</td><td>−1</td></tr><tr><td>2</td><td>−1</td><td>0</td></tr><tr><td>3</td><td>0</td><td>1</td></tr><tr><td>4</td><td>1</td><td>2</td></tr><tr><td>5</td><td>2</td><td>3</td></tr></tbody></table></div><div class="two-col">
+<div class="info"><h3>Center the observations</h3><p>The mean is <strong>(0, 1)</strong>. Subtracting the mean gives coordinates (−2, −2), (−1, −1), (0, 0), (1, 1), (2, 2).</p></div>
+<div class="info"><h3>Geometric observation</h3><p>Every point satisfies <strong>x₂ = x₁ + 1</strong>. Once centered, all points lie on the line <strong>z₂ = z₁</strong>.</p></div></div><div class="equation"><img class="display-math" src="assets/formulas/equation-02.svg" alt="\boldsymbol{\mu} = \begin{bmatrix}0\\1\end{bmatrix},\qquad X_c = \begin{bmatrix} -2 &amp; -2\\-1 &amp; -1\\0 &amp; 0\\1 &amp; 1\\2 &amp; 2 \end{bmatrix}"><div class="eq-note">Centering is required for PCA; the point reconstructions below add the mean back.</div></div><h3>Question 1 · Find PC1</h3><p>Form the sample covariance matrix and solve its eigenvalue problem:</p><div class="equation"><img class="display-math" src="assets/formulas/equation-03.svg" alt="C = \frac{1}{5-1}X_c^TX_c = \frac14 \begin{bmatrix}10&amp;10\\10&amp;10\end{bmatrix} = \begin{bmatrix}2.5&amp;2.5\\2.5&amp;2.5\end{bmatrix}"></div><div class="equation"><img class="display-math" src="assets/formulas/equation-04.svg" alt="\det(C-\lambda I)=(2.5-\lambda)^2-2.5^2 =\lambda(\lambda-5)=0 \quad\Rightarrow\quad \lambda_1=5,\;\lambda_2=0"></div><p>For the largest eigenvalue, <img class="inline-math" src="assets/formulas/equation-19.svg" alt="\lambda_1=5">, solving <img class="inline-math" src="assets/formulas/equation-20.svg" alt="(C-5I)\mathbf w=0"> gives <img class="inline-math" src="assets/formulas/equation-21.svg" alt="w_1=w_2">. Normalizing the direction (1, 1) yields:</p><div class="equation"><img class="display-math" src="assets/formulas/equation-05.svg" alt="\boxed{\displaystyle \mathbf w_{\mathrm{PC1}}=\frac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix} \approx\begin{bmatrix}0.7071\\0.7071\end{bmatrix}}"><div class="eq-note">PC1 is a 45° direction. Its negative is an equally valid eigenvector. PC2 has eigenvalue zero, so PC1 explains 100% of the variance in this tiny dataset.</div></div><h3>Questions 2 and 3 · Reconstruct using PC1</h3><p>For a new point <img class="inline-math" src="assets/formulas/equation-22.svg" alt="\mathbf x">, center it, project onto PC1, reconstruct in centered coordinates, then restore the original mean:</p><div class="equation"><img class="display-math" src="assets/formulas/equation-06.svg" alt="\mathbf z=\mathbf x-\boldsymbol\mu,\quad a=\mathbf w_{\mathrm{PC1}}^T\mathbf z,\quad \hat{\mathbf x}=\boldsymbol\mu+a\mathbf w_{\mathrm{PC1}},\quad E=\lVert\mathbf x-\hat{\mathbf x}\rVert_2"></div><div class="two-col"><div class="worked"><div class="worked-label">QUESTION 2 · x = (3, 3)</div><div class="equation"><img class="display-math" src="assets/formulas/equation-07.svg" alt="\mathbf z=\begin{bmatrix}3\\2\end{bmatrix},\qquad a=\frac{3+2}{\sqrt2}=\frac5{\sqrt2}"></div><div class="equation"><img class="display-math" src="assets/formulas/equation-08.svg" alt="\hat{\mathbf x}= \begin{bmatrix}0\\1\end{bmatrix} +\frac52\begin{bmatrix}1\\1\end{bmatrix} =\begin{bmatrix}2.5\\3.5\end{bmatrix}"></div><div class="equation"><img class="display-math" src="assets/formulas/equation-09.svg" alt="\boxed{E=\sqrt{(3-2.5)^2+(3-3.5)^2} =\frac1{\sqrt2}\approx0.7071}"></div></div><div class="worked"><div class="worked-label">QUESTION 3 · x = (3, 4)</div><div class="equation"><img class="display-math" src="assets/formulas/equation-10.svg" alt="\mathbf z=\begin{bmatrix}3\\3\end{bmatrix},\qquad a=\frac{3+3}{\sqrt2}=3\sqrt2"></div><div class="equation"><img class="display-math" src="assets/formulas/equation-11.svg" alt="\hat{\mathbf x}= \begin{bmatrix}0\\1\end{bmatrix} +3\begin{bmatrix}1\\1\end{bmatrix} =\begin{bmatrix}3\\4\end{bmatrix}"></div><div class="equation"><img class="display-math" src="assets/formulas/equation-12.svg" alt="\boxed{E=\left\lVert\begin{bmatrix}3\\4\end{bmatrix} -\begin{bmatrix}3\\4\end{bmatrix}\right\rVert_2=0}"></div></div></div><div class="callout good"><strong>Interpretation.</strong> The point (3, 4) lies exactly on the PC1 line x₂ = x₁ + 1, so its reconstruction error is zero. The point (3, 3) lies off this line and has perpendicular distance 1/√2 from its PCA reconstruction.</div></section><section id="part2">
+ <div class="eyebrow-blue">PART 02 · DATA VISUALIZATION</div>
+ <h2>Marginalizing the Iris dataset</h2>
+ <p class="lead">The Iris data contain 150 observations in three classes (50 per species) and four measurements: sepal length, sepal width, petal length, and petal width. Marginalizing here means projecting onto selected original feature axes; PCA has <strong>not</strong> yet been applied.</p>
+<figure class="figure wide">
+<img src="plots/iris_1d_petal_length.png" alt="Figure 1: 1D projection: petal length" loading="lazy">
+<figcaption><strong>Figure 1. 1D projection: petal length</strong><span>Setosa is clearly isolated at short petal lengths. Versicolor and Virginica overlap around the transition region.</span></figcaption>
+</figure><div class="figure-grid"><figure class="figure ">
+<img src="plots/iris_2d_sepal.png" alt="Figure 2: 2D projection: sepal length and sepal width" loading="lazy">
+<figcaption><strong>Figure 2. 2D projection: sepal length and sepal width</strong><span>Substantial overlap among the three species; the sepal measurements are less discriminative in this projection.</span></figcaption>
+</figure><figure class="figure ">
+<img src="plots/iris_2d_petal.png" alt="Figure 3: 2D projection: petal length and petal width" loading="lazy">
+<figcaption><strong>Figure 3. 2D projection: petal length and petal width</strong><span>Three comparatively distinct regions; Setosa is isolated, and Versicolor and Virginica overlap only partially.</span></figcaption>
+</figure></div><figure class="figure portrait">
+<img src="plots/iris_3d.png" alt="Figure 4: 3D projection: sepal length, petal length, petal width" loading="lazy">
+<figcaption><strong>Figure 4. 3D projection: sepal length, petal length, petal width</strong><span>The third coordinate adds spatial information, but the petal measurements already distinguish the classes well.</span></figcaption>
+</figure><div class="table-wrap"><table><thead><tr><th>Projection</th><th>Setosa</th><th>Versicolor / Virginica</th></tr></thead><tbody><tr><td>1D petal length</td><td>Clearly separated</td><td>Partially overlapping</td></tr><tr><td>2D sepal features</td><td>Only partial separation</td><td>Strong overlap</td></tr><tr><td>2D petal features</td><td>Clearly separated</td><td>Mostly distinct; some overlap</td></tr><tr><td>3D selected features</td><td>Clearly separated</td><td>Mostly distinct; some overlap</td></tr></tbody></table></div><div class="callout good"><strong>Answer.</strong> Among the projections examined, <strong>petal length and petal width</strong> provide the clearest two-dimensional class clusters. Sepal length and width alone do not separate the species nearly as well. Three-dimensional visualization is informative but does not eliminate all overlap.</div></section><section id="part3">
+ <div class="eyebrow-blue">PART 03 · PRINCIPAL COMPONENT ANALYSIS</div>
+ <h2>New axes learned from Iris measurements</h2>
+ <p>Using <code>sklearn.decomposition.PCA(n_components=4)</code>, the original four-feature dataset is <strong>mean-centered, not z-score standardized</strong>. PCA finds orthogonal unit-length directions of decreasing variance. The projected scores are visualized on PC1, PCs 1–2, and PCs 1–3.</p>
+<div class="equation"><img class="display-math" src="assets/formulas/equation-13.svg" alt="X_c=X-\mathbf1\boldsymbol\mu^T,\qquad C=\frac{1}{149}X_c^TX_c,\qquad Z_k=X_cW_k^T"><div class="eq-note">The rows of Wₖ are the first k principal-component vectors.</div></div><h3>Learned principal-component axis vectors</h3><p>Each column below is a unit-length principal-component vector expressed in the original four-feature coordinate system. The sign of any entire PCA axis may be reversed without changing the solution.</p><div class="table-wrap"><table><thead><tr><th>Original feature</th><th>PC1</th><th>PC2</th><th>PC3</th><th>PC4</th></tr></thead><tbody><tr><td>Sepal length</td><td>+0.361387</td><td>+0.656589</td><td>−0.582030</td><td>+0.315487</td></tr><tr><td>Sepal width</td><td>−0.084523</td><td>+0.730161</td><td>+0.597911</td><td>−0.319723</td></tr><tr><td>Petal length</td><td>+0.856671</td><td>−0.173373</td><td>+0.076236</td><td>−0.479839</td></tr><tr><td>Petal width</td><td>+0.358289</td><td>−0.075481</td><td>+0.545831</td><td>+0.753657</td></tr></tbody></table></div><div class="equation"><img class="display-math" src="assets/formulas/equation-14.svg" alt="\boxed{\displaystyle \mathbf w_{\mathrm{PC1}}=\begin{bmatrix} 0.361387\\-0.084523\\0.856671\\0.358289 \end{bmatrix}}"><div class="eq-note">Petal length has the largest-magnitude coefficient in PC1.</div></div><h3>Visualizing the first one, two, and three PCA axes</h3><figure class="figure wide">
+<img src="plots/iris_pca_1d.png" alt="Figure 5: 1D PCA: scores on PC1" loading="lazy">
+<figcaption><strong>Figure 5. 1D PCA: scores on PC1</strong><span>Setosa occupies a separated negative PC1 region, while Versicolor and Virginica have some overlap.</span></figcaption>
+</figure><figure class="figure wide">
+<img src="plots/iris_pca_2d.png" alt="Figure 6: 2D PCA: scores on PC1 and PC2" loading="lazy">
+<figcaption><strong>Figure 6. 2D PCA: scores on PC1 and PC2</strong><span>Setosa is clearly isolated; Versicolor and Virginica are mostly distinguishable but overlap near their boundary.</span></figcaption>
+</figure><figure class="figure portrait">
+<img src="plots/iris_pca_3d.png" alt="Figure 7: 3D PCA: scores on PC1, PC2 and PC3" loading="lazy">
+<figcaption><strong>Figure 7. 3D PCA: scores on PC1, PC2 and PC3</strong><span>The third PCA coordinate adds variation, although perfect separation is not obtained.</span></figcaption>
+</figure><div class="callout good"><strong>Observation.</strong> PC1 is dominated by petal length, agreeing with the results in Part 2. Species labels did not enter PCA fitting, only the figure coloring. The first two PCs are already sufficient for a useful low-dimensional visualization.</div></section><section id="part4">
+ <div class="eyebrow-blue">PART 04 · DATA COMPRESSION</div>
+ <h2>How much information does PCA retain?</h2>
+ <p>The assignment asks how much variance is retained by the 2D PCA representation and how many principal components suffice to explain at least 50% of total variance.</p>
+<div class="table-wrap"><table><thead><tr><th>Principal component</th><th>Individual explained variance</th><th>Cumulative variance</th></tr></thead><tbody><tr><td>PC1</td><td>92.4619%</td><td>92.4619%</td></tr><tr><td>PC2</td><td>5.3066%</td><td>97.7685%</td></tr><tr><td>PC3</td><td>1.7103%</td><td>99.4788%</td></tr><tr><td>PC4</td><td>0.5212%</td><td>100.0000%</td></tr></tbody></table></div><div class="retention"><div class="retention-head"><span>Variance retained with 2 PCs</span><strong>97.7685%</strong></div><div class="retention-bar"><span class="bar-pc1" style="width:92.4619%"></span><span class="bar-pc2" style="width:5.3066%"></span><span class="bar-rest"></span></div><div class="bar-legend"><span><i class="legend-chip pc1"></i> PC1 · 92.46%</span><span><i class="legend-chip pc2"></i> PC2 · 5.31%</span><span><i class="legend-chip rest"></i> Discarded · 2.23%</span></div></div><h3>Question 1 · Explained variance of 2D PCA</h3><div class="equation"><img class="display-math" src="assets/formulas/equation-15.svg" alt="R_2=\frac{\lambda_1+\lambda_2}{\sum_{j=1}^4\lambda_j} =0.924619+0.053066 =\boxed{0.977685\;\text{(97.7685\%)}}"></div><p>The connection to the Frobenius norm is particularly useful. The total centered-data sum of squares equals the sum of the squared PCA scores over all components; the first two projected axes retain the following fraction:</p><div class="equation"><img class="display-math" src="assets/formulas/equation-16.svg" alt="R_2=\frac{\lVert Z_2\rVert_F^2}{\lVert X_c\rVert_F^2} =\boxed{0.977685}"><div class="eq-note">The independent Frobenius-norm computation returned 97.7685%, matching the eigenvalue ratio.</div></div><h3>Question 2 · Minimum PCs to explain 50%</h3><div class="equation"><img class="display-math" src="assets/formulas/equation-17.svg" alt="R_1=0.924619\ge0.50 \quad\Rightarrow\quad\boxed{k_{\min}=1}"></div><div class="callout good"><strong>Answer.</strong> Two PCs preserve <strong>97.7685%</strong> of the variance, losing only approximately 2.2315%. Just <strong>one PC</strong> exceeds the 50% threshold. Explained variance measures reconstruction information, not directly how well a representation supports classification.</div></section><section id="part5">
+ <div class="eyebrow-blue">PART 05 · NONLINEAR COMPONENTS</div>
+ <h2>ISOMAP with 3 nearest neighbors</h2>
+ <p>Unlike PCA, ISOMAP builds a local neighborhood graph and approximates <strong>geodesic distances</strong> using shortest paths through that graph. It then embeds the data in a lower-dimensional Euclidean space. For direct comparison with Part 3, both methods here use two output dimensions and the same original four Iris measurements.</p>
+ <div class="method-strip"><div><strong>k = 3</strong><span>Nearest neighbors</span></div><div><strong>2D</strong><span>Embedding space</span></div><div><strong>2</strong><span>Connected graph components</span></div></div>
+<figure class="figure wide">
+<img src="plots/iris_isomap_3nn.png" alt="Figure 8: 2D ISOMAP embedding (3 nearest neighbors)" loading="lazy">
+<figcaption><strong>Figure 8. 2D ISOMAP embedding (3 nearest neighbors)</strong><span>Setosa forms a narrow, distinct band. Versicolor and Virginica appear on different curved regions with some overlap.</span></figcaption>
+</figure><figure class="figure wide">
+<img src="plots/iris_pca_vs_isomap.png" alt="Figure 9: 2D PCA versus 2D ISOMAP" loading="lazy">
+<figcaption><strong>Figure 9. 2D PCA versus 2D ISOMAP</strong><span>PCA preserves maximum projected variance; ISOMAP emphasizes neighborhood-based geodesic structure.</span></figcaption>
+</figure><h3>Evaluation using known species labels</h3><p>The silhouette score assesses the separation and compactness of the species groups <strong>after</strong> embedding; the labels are not used in either dimensionality-reduction fit. It is not classification accuracy.</p><div class="equation"><img class="display-math" src="assets/formulas/equation-18.svg" alt="s(i)=\frac{b(i)-a(i)}{\max\{a(i),b(i)\}}"><div class="eq-note">a(i): mean within-class distance; b(i): smallest average distance to another class.</div></div><div class="table-wrap"><table><thead><tr><th>2D method</th><th>Silhouette score</th><th>Compression / caveat</th></tr></thead><tbody><tr><td>PCA</td><td>0.534393</td><td>97.7685% original variance retained</td></tr><tr class="best-row"><td>ISOMAP (k = 3)</td><td><strong>0.559967</strong></td><td>No directly equivalent PCA explained-variance percentage; graph completed</td></tr></tbody></table></div><div class="callout warning"><strong>Important connectivity warning.</strong> The 3-nearest-neighbor graph has <strong>two disconnected components</strong>. Scikit-learn completes this graph by adding connections to run ISOMAP. This can affect geodesic distances and the final embedding. We retained <strong>k = 3</strong> to follow the assignment instead of changing the parameter. The reported ISOMAP score (0.559967) is from the student’s run; small numerical differences may occur with other scikit-learn/SciPy versions.</div><h3>Which is preferable?</h3><p>For <strong>visual species separation</strong>, ISOMAP is marginally better in this run (silhouette 0.559967 vs. 0.534393), with Versicolor and Virginica spreading along distinct nonlinear shapes. However, the improvement is modest, overlap remains, and the disconnected graph requires completion.</p><p>For <strong>transparent data compression and a stable representation</strong>, PCA is preferable: its first two components retain 97.7685% of the original centered-data variance, and it avoids a connectivity-dependent graph construction. PCA is therefore the more defensible overall choice on this dataset, while ISOMAP remains an informative alternative visualization.</p></section><section id="conclusion">
+ <div class="eyebrow-blue">DISCUSSION &amp; REPRODUCIBILITY</div>
+ <h2>Overall conclusions</h2>
+ <div class="two-col">
+  <div class="info"><h3>What PCA captures</h3><p>The hand example shows why centering and unit-length eigenvectors matter: PC1 minimizes orthogonal reconstruction error. For Iris, the first two axes preserve nearly all measured variance and separate the species reasonably well.</p></div>
+  <div class="info"><h3>What ISOMAP changes</h3><p>ISOMAP offers a nonlinear view based on local graph distances and slightly improves this embedding’s silhouette score. Its disconnected 3-NN graph limits reliability, so nonlinear complexity is not automatically preferable.</p></div>
+ </div>
+ <p><strong>Reproducibility.</strong> The code uses <code>numpy</code>, <code>matplotlib</code>, <code>scikit-learn</code>, and <code>scipy</code>. The scikit-learn Iris dataset is loaded locally—no internet connection is needed to run the scripts. PCA is mean-centered without feature standardization, and ISOMAP uses <code>n_neighbors=3</code>.</p>
+ <div class="file-links"><a href="Part_2.py" download>Part_2.py</a><a href="Part_3.py" download>Part_3.py</a><a href="Part_5.py" download>Part_5.py</a><a href="SYDE572_Assignment3_Report.pdf" download>PDF report</a></div>
+</section><section id="handwritten-solutions" class="handwritten-section">
+ <div class="eyebrow-blue">PART 1 · ORIGINAL HANDWRITTEN WORK</div>
+ <h2>Complete handwritten calculations (3 pages)</h2>
+ <p class="lead">The complete original PDF is reproduced below, in order: covariance and eigenvalues (page 1), eigenvectors and the reconstruction of (3, 3) (page 2), then the reconstruction of (3, 4) (page 3). Each page is shown in full and has been checked against the assigned dataset.</p>
+ <div class="file-links">
+  <a href="Assignments3-Part1.pdf" target="_blank" rel="noopener">View full PDF in a separate tab</a>
+  <a href="Assignments3-Part1.pdf" download>Download original handwritten PDF</a>
+ </div>
+ <div class="handwritten-pages">
+  <figure class="handwritten-page">
+   <a href="Assignments3-Part1.pdf" target="_blank" rel="noopener" title="Open original handwritten PDF">
+    <img src="assets/handwritten/part1_page_1.png" alt="Original handwritten SYDE 572 Assignment 3 Part 1, page 1 of 3" loading="lazy">
+   </a>
+   <figcaption>Original handwritten solution · Page 1 of 3</figcaption>
+  </figure>
+  <figure class="handwritten-page">
+   <a href="Assignments3-Part1.pdf" target="_blank" rel="noopener" title="Open original handwritten PDF">
+    <img src="assets/handwritten/part1_page_2.png" alt="Original handwritten SYDE 572 Assignment 3 Part 1, page 2 of 3" loading="lazy">
+   </a>
+   <figcaption>Original handwritten solution · Page 2 of 3</figcaption>
+  </figure>
+  <figure class="handwritten-page">
+   <a href="Assignments3-Part1.pdf" target="_blank" rel="noopener" title="Open original handwritten PDF">
+    <img src="assets/handwritten/part1_page_3.png" alt="Original handwritten SYDE 572 Assignment 3 Part 1, page 3 of 3" loading="lazy">
+   </a>
+   <figcaption>Original handwritten solution · Page 3 of 3</figcaption>
+  </figure>
+ </div>
+</section>
+
+<section id="source-code" class="sources">
+ <div class="eyebrow-blue">APPENDIX · FULL REPRODUCIBLE IMPLEMENTATION</div>
+ <h2>Complete Python source code</h2>
+ <p class="lead">Your original uploaded Python scripts are reproduced exactly below, without collapsible sections or inner scrolling. The same <code>.py</code> files are included as downloads in the package.</p>
+ <div class="file-links"><a href="Part_2.py" download>Download Part_2.py</a><a href="Part_3.py" download>Download Part_3.py</a><a href="Part_5.py" download>Download Part_5.py</a></div>
+<h3 class="code-heading">Part_2.py <span>Part 2 · Original-feature visualizations</span></h3><pre class="source"><code>
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from pathlib import Path
+
+
+BASE_DIR = Path(__file__).resolve().parent
+PLOTS_DIR = BASE_DIR / &quot;plots&quot;
+PLOTS_DIR.mkdir(exist_ok=True)
+
+iris = load_iris()
+
+X = iris.data
+y = iris.target
+
+feature_names = iris.feature_names
+class_names = iris.target_names
+
+print(&quot;Dataset shape:&quot;, X.shape)
+print(&quot;Feature names:&quot;, feature_names)
+print(&quot;Class names:&quot;, class_names)
+
+
+
+plt.figure(figsize=(9, 6))
+
+for i, name in enumerate(class_names):
+    plt.hist(
+        X[y == i, 2],
+        bins=16,
+        alpha=0.55,
+        label=name
+    )
+
+plt.xlabel(&quot;Petal Length (cm)&quot;)
+plt.ylabel(&quot;Number of Flowers&quot;)
+plt.title(&quot;1D Iris Visualization: Petal Length&quot;)
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+
+plt.savefig(
+    PLOTS_DIR / &quot;iris_1d_petal_length.png&quot;,
+    dpi=300
+)
+plt.show()
+
+
+
+plt.figure(figsize=(9, 6))
+
+for i, name in enumerate(class_names):
+    plt.scatter(
+        X[y == i, 0],
+        X[y == i, 1],
+        label=name,
+        alpha=0.75
+    )
+
+plt.xlabel(&quot;Sepal Length (cm)&quot;)
+plt.ylabel(&quot;Sepal Width (cm)&quot;)
+plt.title(&quot;2D Iris Visualization: Sepal Features&quot;)
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+
+plt.savefig(
+    PLOTS_DIR / &quot;iris_2d_sepal.png&quot;,
+    dpi=300
+)
+plt.show()
+
+
+
+plt.figure(figsize=(9, 6))
+
+for i, name in enumerate(class_names):
+    plt.scatter(
+        X[y == i, 2],
+        X[y == i, 3],
+        label=name,
+        alpha=0.75
+    )
+
+plt.xlabel(&quot;Petal Length (cm)&quot;)
+plt.ylabel(&quot;Petal Width (cm)&quot;)
+plt.title(&quot;2D Iris Visualization: Petal Features&quot;)
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+
+plt.savefig(
+    PLOTS_DIR / &quot;iris_2d_petal.png&quot;,
+    dpi=300
+)
+plt.show()
+
+fig = plt.figure(figsize=(10, 7))
+ax = fig.add_subplot(111, projection=&quot;3d&quot;)
+
+for i, name in enumerate(class_names):
+    ax.scatter(
+        X[y == i, 0],
+        X[y == i, 2],
+        X[y == i, 3],
+        label=name,
+        alpha=0.75
+    )
+
+ax.set_xlabel(&quot;Sepal Length (cm)&quot;)
+ax.set_ylabel(&quot;Petal Length (cm)&quot;)
+ax.set_zlabel(&quot;Petal Width (cm)&quot;)
+ax.set_title(&quot;3D Iris Visualization&quot;)
+ax.legend()
+
+plt.tight_layout()
+
+plt.savefig(
+    PLOTS_DIR / &quot;iris_3d.png&quot;,
+    dpi=300,
+    bbox_inches=&quot;tight&quot;
+)
+plt.show()
+</code></pre><h3 class="code-heading">Part_3.py <span>Parts 3 & 4 · PCA and data compression</span></h3><pre class="source"><code>
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.decomposition import PCA
+from pathlib import Path
+
+# --------------------------------------
+# Part 3
+# --------------------------------------
+
+BASE_DIR = Path(__file__).resolve().parent
+PLOTS_DIR = BASE_DIR / &quot;plots&quot;
+PLOTS_DIR.mkdir(exist_ok=True)
+
+iris = load_iris()
+
+X = iris.data
+y = iris.target
+
+feature_names = iris.feature_names
+class_names = iris.target_names
+
+print(&quot;Dataset shape:&quot;, X.shape)
+
+
+
+# Iris has 4 original features.
+# PCA automatically centers the data.
+# We do not standardize feature variances.
+
+pca = PCA(n_components=4)
+
+# Fit PCA and transform the data
+X_pca = pca.fit_transform(X)
+
+print(&quot;\nPCA transformed shape:&quot;, X_pca.shape)
+
+
+
+print(&quot;\nPrincipal Component Vectors:&quot;)
+
+for i, component in enumerate(pca.components_):
+    print(f&quot;\nPC{i + 1}:&quot;)
+    for feature, weight in zip(feature_names, component):
+        print(f&quot;  {feature}: {weight:.6f}&quot;)
+
+
+
+print(&quot;\nExplained Variance Ratios:&quot;)
+
+for i, ratio in enumerate(pca.explained_variance_ratio_):
+    print(f&quot;PC{i + 1}: {ratio * 100:.4f}%&quot;)
+
+print(&quot;\nCumulative Explained Variance:&quot;)
+
+cumulative = np.cumsum(pca.explained_variance_ratio_)
+
+for i, ratio in enumerate(cumulative):
+    print(f&quot;First {i + 1} PCs: {ratio * 100:.4f}%&quot;)
+
+
+plt.figure(figsize=(9, 6))
+
+for i, name in enumerate(class_names):
+    plt.hist(
+        X_pca[y == i, 0],
+        bins=18,
+        alpha=0.55,
+        label=name
+    )
+
+plt.xlabel(&quot;First Principal Component (PC1)&quot;)
+plt.ylabel(&quot;Number of Flowers&quot;)
+plt.title(&quot;1D Iris PCA: First Principal Component&quot;)
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+
+plt.savefig(
+    PLOTS_DIR / &quot;iris_pca_1d.png&quot;,
+    dpi=300
+)
+
+plt.show()
+
+
+plt.figure(figsize=(9, 6))
+
+for i, name in enumerate(class_names):
+    plt.scatter(
+        X_pca[y == i, 0],
+        X_pca[y == i, 1],
+        label=name,
+        alpha=0.75
+    )
+
+plt.xlabel(&quot;First Principal Component (PC1)&quot;)
+plt.ylabel(&quot;Second Principal Component (PC2)&quot;)
+plt.title(&quot;2D Iris PCA: First Two Components&quot;)
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+
+plt.savefig(
+    PLOTS_DIR / &quot;iris_pca_2d.png&quot;,
+    dpi=300
+)
+
+plt.show()
+
+
+
+fig = plt.figure(figsize=(10, 7))
+
+ax = fig.add_subplot(111, projection=&quot;3d&quot;)
+
+for i, name in enumerate(class_names):
+    ax.scatter(
+        X_pca[y == i, 0],
+        X_pca[y == i, 1],
+        X_pca[y == i, 2],
+        label=name,
+        alpha=0.75
+    )
+
+ax.set_xlabel(&quot;PC1&quot;)
+ax.set_ylabel(&quot;PC2&quot;)
+ax.set_zlabel(&quot;PC3&quot;)
+
+ax.set_title(&quot;3D Iris PCA: First Three Components&quot;)
+ax.legend()
+
+plt.tight_layout()
+
+plt.savefig(
+    PLOTS_DIR / &quot;iris_pca_3d.png&quot;,
+    dpi=300,
+    bbox_inches=&quot;tight&quot;
+)
+
+plt.show()
+
+
+# --------------------------------------
+# Part 4: Data Compression
+# --------------------------------------
+
+print(&quot;\nPart 4: Data Compression&quot;)
+
+ratios = pca.explained_variance_ratio_
+cumulative = np.cumsum(ratios)
+
+# Question 1: Variance explained by first 2 PCs
+variance_2d = cumulative[1]
+
+print(
+    f&quot;Variance explained by 2 PCs: &quot;
+    f&quot;{variance_2d * 100:.4f}%&quot;
+)
+
+# Question 2: Minimum PCs to explain 50%
+min_components = (
+    np.searchsorted(cumulative, 0.50) + 1
+)
+
+print(
+    f&quot;Minimum PCs for 50% variance: &quot;
+    f&quot;{min_components}&quot;
+)
+
+# Verify using the Frobenius norm
+X_centered = X - pca.mean_
+
+Z_2d = X_pca[:, :2]
+
+frobenius_ratio = (
+    np.linalg.norm(Z_2d, ord=&quot;fro&quot;) ** 2
+    / np.linalg.norm(X_centered, ord=&quot;fro&quot;) ** 2
+)
+
+print(
+    f&quot;Frobenius norm verification: &quot;
+    f&quot;{frobenius_ratio * 100:.4f}%&quot;
+)
+</code></pre><h3 class="code-heading">Part_5.py <span>Part 5 · ISOMAP and PCA comparison</span></h3><pre class="source"><code>
+import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.datasets import load_iris
+from sklearn.decomposition import PCA
+from sklearn.manifold import Isomap
+from sklearn.metrics import silhouette_score
+from sklearn.neighbors import kneighbors_graph
+
+from scipy.sparse.csgraph import connected_components
+from pathlib import Path
+
+
+
+BASE_DIR = Path(__file__).resolve().parent
+PLOTS_DIR = BASE_DIR / &quot;plots&quot;
+PLOTS_DIR.mkdir(exist_ok=True)
+
+iris = load_iris()
+
+X = iris.data
+y = iris.target
+class_names = iris.target_names
+
+print(&quot;Dataset shape:&quot;, X.shape)
+
+
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+
+pca_variance = sum(
+    pca.explained_variance_ratio_
+)
+
+print(
+    f&quot;PCA explained variance: &quot;
+    f&quot;{pca_variance * 100:.4f}%&quot;
+)
+
+
+n_neighbors = 3
+
+isomap = Isomap(
+    n_neighbors=n_neighbors,
+    n_components=2
+)
+
+X_isomap = isomap.fit_transform(X)
+
+print(&quot;ISOMAP shape:&quot;, X_isomap.shape)
+
+# Check connectivity of the original
+# three-nearest-neighbor graph
+graph = kneighbors_graph(
+    X,
+    n_neighbors=3,
+    mode=&quot;connectivity&quot;,
+    include_self=False
+)
+
+n_graph_components, _ = connected_components(
+    graph,
+    directed=False
+)
+
+print(
+    &quot;3-NN graph connected components:&quot;,
+    n_graph_components
+)
+
+
+
+# Silhouette score uses species labels only
+# for evaluation, not for fitting PCA/ISOMAP.
+
+pca_score = silhouette_score(X_pca, y)
+isomap_score = silhouette_score(X_isomap, y)
+
+print(f&quot;PCA silhouette score: {pca_score:.6f}&quot;)
+print(f&quot;ISOMAP silhouette score: {isomap_score:.6f}&quot;)
+
+
+
+plt.figure(figsize=(9, 6))
+
+for i, name in enumerate(class_names):
+    plt.scatter(
+        X_isomap[y == i, 0],
+        X_isomap[y == i, 1],
+        label=name,
+        alpha=0.75
+    )
+
+plt.xlabel(&quot;ISOMAP Component 1&quot;)
+plt.ylabel(&quot;ISOMAP Component 2&quot;)
+plt.title(&quot;Iris ISOMAP: 3 Nearest Neighbors&quot;)
+
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+
+plt.savefig(
+    PLOTS_DIR / &quot;iris_isomap_3nn.png&quot;,
+    dpi=300,
+    bbox_inches=&quot;tight&quot;
+)
+
+plt.show()
+
+
+
+fig, axes = plt.subplots(
+    1, 2, figsize=(14, 6)
+)
+
+for i, name in enumerate(class_names):
+
+    axes[0].scatter(
+        X_pca[y == i, 0],
+        X_pca[y == i, 1],
+        label=name,
+        alpha=0.75
+    )
+
+    axes[1].scatter(
+        X_isomap[y == i, 0],
+        X_isomap[y == i, 1],
+        label=name,
+        alpha=0.75
+    )
+
+axes[0].set_title(&quot;PCA (2D)&quot;)
+axes[0].set_xlabel(&quot;PC1&quot;)
+axes[0].set_ylabel(&quot;PC2&quot;)
+
+axes[1].set_title(&quot;ISOMAP (2D, k=3)&quot;)
+axes[1].set_xlabel(&quot;ISOMAP Component 1&quot;)
+axes[1].set_ylabel(&quot;ISOMAP Component 2&quot;)
+
+for ax in axes:
+    ax.legend()
+    ax.grid(alpha=0.3)
+
+plt.tight_layout()
+
+plt.savefig(
+    PLOTS_DIR / &quot;iris_pca_vs_isomap.png&quot;,
+    dpi=300,
+    bbox_inches=&quot;tight&quot;
+)
+
+plt.show()
+</code></pre></section></main>
+<footer>SYDE 572 · Assignment 3 · Zoey-Qixuan Yang · University of Waterloo<br>All figures from completed assignment runs. Code provided in full for reproducibility.</footer>
+</body></html>
