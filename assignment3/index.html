@@ -267,15 +267,20 @@ ax.set_ylabel(&quot;Petal Length (cm)&quot;)
 ax.set_zlabel(&quot;Petal Width (cm)&quot;)
 ax.set_title(&quot;3D Iris Visualization&quot;)
 ax.legend()
-
-plt.tight_layout()
+ 
+ax.xaxis.labelpad = 8
+ax.yaxis.labelpad = 8
+ax.zaxis.labelpad = 8
+ax.set_box_aspect(None, zoom=0.85)
 
 plt.savefig(
     PLOTS_DIR / &quot;iris_3d.png&quot;,
     dpi=300,
-    bbox_inches=&quot;tight&quot;
+    bbox_inches=&quot;tight&quot;,
+    pad_inches=0.4
 )
 plt.show()
+ 
 </code></pre><h3 class="code-heading">Part_3.py <span>Parts 3 & 4 · PCA and data compression</span></h3><pre class="source"><code>
 import numpy as np
 import matplotlib.pyplot as plt
@@ -409,16 +414,18 @@ ax.set_zlabel(&quot;PC3&quot;)
 ax.set_title(&quot;3D Iris PCA: First Three Components&quot;)
 ax.legend()
 
-plt.tight_layout()
+ax.xaxis.labelpad = 8
+ax.yaxis.labelpad = 8
+ax.zaxis.labelpad = 8
+ax.set_box_aspect(None, zoom=0.85)
 
 plt.savefig(
     PLOTS_DIR / &quot;iris_pca_3d.png&quot;,
     dpi=300,
-    bbox_inches=&quot;tight&quot;
+    bbox_inches=&quot;tight&quot;,
+    pad_inches=0.4
 )
-
 plt.show()
-
 
 # --------------------------------------
 # Part 4: Data Compression
