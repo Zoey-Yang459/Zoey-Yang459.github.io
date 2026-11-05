@@ -117,8 +117,6 @@ img.inline-math{display:inline-block;vertical-align:-0.19em;max-height:1.45em;ma
   <div class="info"><h3>What PCA captures</h3><p>The hand example shows why centering and unit-length eigenvectors matter: PC1 minimizes orthogonal reconstruction error. For Iris, the first two axes preserve nearly all measured variance and separate the species reasonably well.</p></div>
   <div class="info"><h3>What ISOMAP changes</h3><p>ISOMAP offers a nonlinear view based on local graph distances and slightly improves this embedding’s silhouette score, but not its 5-NN classification accuracy. Its disconnected 3-NN graph limits reliability, so nonlinear complexity is not automatically preferable.</p></div>
  </div>
- <p><strong>Reproducibility.</strong> The code uses <code>numpy</code>, <code>matplotlib</code>, <code>scikit-learn</code>, and <code>scipy</code>. The scikit-learn Iris dataset is loaded locally—no internet connection is needed to run the scripts. PCA is mean-centered without feature standardization, and ISOMAP uses <code>n_neighbors=3</code>.</p>
- <div class="file-links"><a href="Part_2.py" download>Part_2.py</a><a href="Part_3.py" download>Part_3.py</a><a href="Part_5.py" download>Part_5.py</a><a href="SYDE572_Assignment3_Report.pdf" download>PDF report</a></div>
 </section><section id="handwritten-solutions" class="handwritten-section">
  <div class="eyebrow-blue">PART 1 · ORIGINAL HANDWRITTEN WORK</div>
  <h2>Complete handwritten calculations (3 pages)</h2>
