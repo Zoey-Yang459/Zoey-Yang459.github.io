@@ -131,15 +131,17 @@ ax.set_zlabel("PC3")
 ax.set_title("3D Iris PCA: First Three Components")
 ax.legend()
 
-plt.tight_layout()
+ax.xaxis.labelpad = 8
+ax.yaxis.labelpad = 8
+ax.zaxis.labelpad = 8
+ax.set_box_aspect(None, zoom=0.85)
 
 plt.savefig(
     PLOTS_DIR / "iris_pca_3d.png",
     dpi=300,
-    bbox_inches="tight"
+    bbox_inches="tight",
+    pad_inches=0.4
 )
-
-plt.show()
 
 
 # --------------------------------------
