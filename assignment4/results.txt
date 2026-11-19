@@ -1,0 +1,159 @@
+Total documents: 11914
+Sentiment distribution: Counter({'pos': 6000, 'neg': 5914})
+
+Training documents: 9531
+Evaluation documents: 2383
+Training labels: Counter({'pos': 4847, 'neg': 4684})
+Evaluation labels: Counter({'neg': 1230, 'pos': 1153})
+
+First training document:
+Label: neg
+First 20 words: ['i', 'bought', 'this', 'album', 'because', 'i', 'loved', 'the', 'title', 'song', '.', 'it', "'s", 'such', 'a', 'great', 'song', ',', 'how', 'bad']
+
+Question: Naive Bayes Training
+Vocabulary size: 52392
+
+Class: pos
+Prior probability: 0.508551
+Total word occurrences: 720896
+Count of 'great': 2008
+Count of 'bad': 261
+
+Class: neg
+Prior probability: 0.491449
+Total word occurrences: 714916
+Count of 'great': 824
+Count of 'bad': 709
+
+Question: Naive Bayes Log Scores
+
+Document: ['great']
+Positive log score: -6.629205
+Negative log score: -7.545659
+Predicted sentiment: pos
+Positive joint probability: 0.00132121
+Negative joint probability: 0.00052840
+
+Document: ['bad']
+Positive log score: -8.666253
+Negative log score: -7.695777
+Predicted sentiment: neg
+Positive joint probability: 0.00017230
+Negative joint probability: 0.00045474
+
+Document: ['a', 'top-quality', 'performance']
+Positive log score: -26.366269
+Negative log score: -27.037539
+Predicted sentiment: pos
+
+Question: Classify Single Documents
+Document: ['great']
+Predicted sentiment: pos
+
+Document: ['bad']
+Predicted sentiment: neg
+
+Document: ['a', 'top-quality', 'performance']
+Predicted sentiment: pos
+
+
+Question: Classify Evaluation Set
+Number of predictions: 2383
+
+First 10 predictions:
+['neg', 'pos', 'neg', 'pos', 'pos', 'neg', 'pos', 'neg', 'neg', 'pos']
+
+First 10 true labels:
+['neg', 'pos', 'neg', 'pos', 'pos', 'neg', 'pos', 'neg', 'neg', 'neg']
+
+Question: Naive Bayes Evaluation
+Total evaluation documents: 2383
+Correct predictions: 1943
+Incorrect predictions: 440
+Classification accuracy: 0.815359
+Classification accuracy (%): 81.54%
+
+Question: Error Analysis
+Total misclassified reviews: 440
+Negative predicted as positive: 193
+Positive predicted as negative: 247
+
+--- Evaluation Review 545 ---
+Actual label: neg
+Predicted label: pos
+Positive log score: -415.0448
+Negative log score: -421.7452
+Review:
+this product is great at exfoliating , not so great at hair removal . your skin will be silky smooth , but still have hair . the hair that is removed does n't stay gone long . and it 's tricky to maneuver into the curvier parts of your body . it will definitely have to be used in conjunction with another product .
+
+--- Evaluation Review 1092 ---
+Actual label: neg
+Predicted label: pos
+Positive log score: -354.4948
+Negative log score: -364.3597
+Review:
+this bag is very small . my canon 20d fits nicely with a small lens , but you cannot fit more than one lens with the camera body . we kept the bag for informal use when we only need the body and one lens to avoid always having to carry a bulky bag
+
+--- Evaluation Review 1813 ---
+Actual label: pos
+Predicted label: neg
+Positive log score: -582.9425
+Negative log score: -572.3623
+Review:
+this replacement battery is half the cost of canon 's yet offers longer life . i bought it when i first got my sd10. when one battery runs out , the spare goes in . the lenmar still works great while the canon is near end life ! i am buying two more since they are so cheap ! do not buy no name batteries on ebay . they do not last worth a darn and are basically a waste of money ! do n't do it. .
+
+--- Evaluation Review 2069 ---
+Actual label: pos
+Predicted label: neg
+Positive log score: -364.6592
+Negative log score: -357.0675
+Review:
+i saw this film a few years back on tv and really enjoyed it , but i notice it is presented in full screen format . is this the correct aspect ratio ? i hate to buy a botched pan / scan version....can anyone help me out ? ? ? ? ? ?
+
+--- Evaluation Review 1558 ---
+Actual label: neg
+Predicted label: pos
+Positive log score: -457.3578
+Negative log score: -467.8063
+Review:
+i live in south africa where the series appeared 20 years ago.thanks to amazon i was able to relive the wonder of archie bunker where each episode provides laughs from one of the family , each of whom is brilliantly cast.i have series 3&4 and now want 1&2.do n't wait any longer , 24 episodes of absolute delight await you
+
+Optional Task: Learning Curve
+ 10% training ( 953 docs): 75.49% accuracy
+ 20% training (1906 docs): 78.14% accuracy
+ 30% training (2859 docs): 79.14% accuracy
+ 40% training (3812 docs): 79.40% accuracy
+ 50% training (4765 docs): 79.65% accuracy
+ 60% training (5718 docs): 80.70% accuracy
+ 70% training (6671 docs): 81.03% accuracy
+ 80% training (7624 docs): 81.20% accuracy
+ 90% training (8577 docs): 81.75% accuracy
+100% training (9531 docs): 81.54% accuracy
+/mnt/data/syde572_assignment4_site/Part_1.py:447: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+  plt.show()
+
+Optional Task: Informative Words
+
+Top 10 Positive Words:
+excellent          +1.1907
+easy               +1.0902
+season             +1.0595
+amazing            +1.0576
+highly             +1.0254
+wonderful          +0.9592
+illustrator        +0.9011
+lenses             +0.8693
+great              +0.8546
+perfect            +0.8539
+
+Top 10 Negative Words:
+waste              -1.5387
+worst              -1.3731
+boring             -1.2775
+horrible           -1.2290
+support            -1.1047
+poor               -1.0421
+customer           -1.0051
+warranty           -0.9957
+terrible           -0.9932
+refund             -0.9361
